@@ -8,24 +8,24 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" href="index.php">Головна</a>
+                    <a class="nav-link active" href="/museum/index.php">Головна</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="exhibits.php">Експонати</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="contact.php">Контакти</a>
+                    <a class="nav-link" href="/museum/halls/halls.php">Зали</a>
                 </li>
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="logout.php">Вихід (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a>
+                        <a class="nav-link" href="/museum/logout.php">Вихід (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a>
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="register.php">Реєстрація</a>
+                        <a class="nav-link" href="/museum/register.php">Реєстрація</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.php">Вхід</a>
+                        <a class="nav-link" href="/museum/login.php">Вхід</a>
                     </li>
                 <?php endif; ?>
             </ul>
