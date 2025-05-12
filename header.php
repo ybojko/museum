@@ -16,6 +16,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/museum/halls/halls.php">Зали</a>
                 </li>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/museum/employees/employees.php">Робітники</a>
+                    </li>
+                <?php endif; ?>
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li class="nav-item">
                         <a class="nav-link" href="/museum/logout.php">Вихід (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a>
