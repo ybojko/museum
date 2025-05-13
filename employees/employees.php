@@ -1,11 +1,11 @@
 <?php
-session_start();
+include '../connectionString.php';
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: /museum/index.php');
     exit;
 }
 
-include '../connectionString.php';
 
 // Отримання параметрів пошуку
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                         <td><?php echo htmlspecialchars($row['hall_id']); ?></td>
                         <td>
                             <?php if (!empty($row['photo'])): ?>
-                                <img src="/museum/uploads/<?php echo htmlspecialchars($row['photo']); ?>" alt="Фото" width="50">
+                                <img src="/museum/employees_uploads/<?php echo htmlspecialchars($row['photo']); ?>" alt="Фото" width="50">
                             <?php endif; ?>
                         </td>
                         <td>

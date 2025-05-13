@@ -1,11 +1,10 @@
 <?php
-session_start();
+include '../connectionString.php';
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: halls.php');
     exit;
 }
 
-include '../connectionString.php';
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 

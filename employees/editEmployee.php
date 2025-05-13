@@ -1,11 +1,10 @@
 <?php
-session_start();
+include '../connectionString.php';
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: employees.php');
     exit;
 }
 
-include '../connectionString.php';
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -29,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Завантаження фото
         if (!empty($photo)) {
-            $target_dir = "../uploads/";
+            $target_dir = "../employees_uploads/";
             $target_file = $target_dir . basename($photo);
             move_uploaded_file($_FILES['photo']['tmp_name'], $target_file);
         }
@@ -94,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="mb-3">
             <label for="phone" class="form-label">Телефон</label>
-            <input type="text" class="form-control" id="phone" name="phone" value="<?php echo htmlspecialchars($employee['phone']); ?>" required>
+            <input type="number" class="form-control" id="phone" name="phone" value="<?php echo htmlspecialchars($employee['phone']); ?>" required>
         </div>
         <div class="mb-3">
             <label for="hall_id" class="form-label">Зал (опціонально)</label>

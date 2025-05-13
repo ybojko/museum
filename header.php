@@ -1,4 +1,4 @@
-<?php session_start(); ?>
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
         <a class="navbar-brand" href="#">Краєзнавчий музей</a>
@@ -11,7 +11,10 @@
                     <a class="nav-link active" href="/museum/index.php">Головна</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="exhibits.php">Експонати</a>
+                    <a class="nav-link" href="/museum/exhibits/exhibits.php">Експонати</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/museum/exhibitions/exhibitions.php">Виставки</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/museum/halls/halls.php">Зали</a>

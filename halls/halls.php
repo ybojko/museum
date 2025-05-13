@@ -1,5 +1,4 @@
 <?php
-session_start();
 include '../connectionString.php'; // Підключення до бази даних
 
 // Отримання параметрів пошуку та фільтрації

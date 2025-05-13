@@ -1,11 +1,10 @@
 <?php
-session_start();
+include '../connectionString.php';
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: employees.php');
     exit;
 }
 
-include '../connectionString.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $last_name = trim($_POST['last_name']);
@@ -27,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Завантаження фото
         if (!empty($photo)) {
-            $target_dir = "../uploads/";
+            $target_dir = "../employees_uploads/";
             $target_file = $target_dir . basename($photo);
             move_uploaded_file($_FILES['photo']['tmp_name'], $target_file);
         }
@@ -73,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="mb-3">
             <label for="salary" class="form-label">Зарплата</label>
-            <input type="number" class="form-control" id="salary" name="hire_date" required>
+            <input type="number" class="form-control" id="salary" name="salary" required>
         </div>
         <div class="mb-3">
             <label for="hire_date" class="form-label">Дата найму</label>
@@ -85,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="mb-3">
             <label for="phone" class="form-label">Телефон</label>
-            <input type="text" class="form-control" id="phone" name="phone" required>
+            <input type="number" class="form-control" id="phone" name="phone" required>
         </div>
         <div class="mb-3">
             <label for="hall_id" class="form-label">Зал (опціонально)</label>
