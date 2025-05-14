@@ -3,6 +3,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
+    $user_type = isset($_POST['user_type']) && in_array($_POST['user_type'], ['default', 'benefitial']) ? $_POST['user_type'] : 'default';
 
     // Перевірка, чи всі поля заповнені
     if (empty($username) || empty($email) || empty($password)) {
@@ -23,8 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Хешування пароля
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 // Додавання нового користувача
-                $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-                $stmt->bind_param("sss", $username, $email, $hashed_password);
+                $stmt = $conn->prepare("INSERT INTO users (username, email, password, role, user_type, created_at) VALUES (?, ?, ?, 'user', ?, NOW())");
+                $stmt->bind_param("ssss", $username, $email, $hashed_password, $user_type);
                 if ($stmt->execute()) {
                     echo "<script>
                             alert('Реєстрація успішна!');
@@ -69,6 +70,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="mb-3">
             <label for="password" class="form-label">Пароль</label>
             <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <div class="mb-3">
+            <label for="user_type" class="form-label">Тип акаунта</label>
+            <select class="form-select" id="user_type" name="user_type" required>
+                <option value="default" selected>Звичайний</option>
+                <option value="benefitial">Пільговий</option>
+            </select>
         </div>
         <button type="submit" class="btn btn-primary">Зареєструватися</button>
     </form>

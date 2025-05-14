@@ -13,11 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hall_id = trim($_POST['hall_id']);
     $description = trim($_POST['description']);
 
-    // Валідація
     if (empty($title) || empty($start_date) || empty($hall_id)) {
         echo "<script>alert('Будь ласка, заповніть усі обов’язкові поля.');</script>";
     } else {
-        // Додавання нової виставки
         $stmt = $conn->prepare("INSERT INTO exhibitions (title, start_date, end_date, hall_id, description) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssds", $title, $start_date, $end_date, $hall_id, $description);
         if ($stmt->execute()) {

@@ -1,14 +1,20 @@
 <?php
 include '../connectionString.php';
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: employees.php');
     exit;
 }
 
+// Отримання id через POST або GET
+$id = isset($_POST['id']) ? intval($_POST['id']) : (isset($_GET['id']) ? intval($_GET['id']) : 0);
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if ($id === 0) {
+    echo "<script>alert('Невірний запит. ID не передано.'); window.location.href = 'employees.php';</script>";
+    exit;
+}
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['last_name'])) {
     $last_name = trim($_POST['last_name']);
     $first_name = trim($_POST['first_name']);
     $position = trim($_POST['position']);
@@ -19,10 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $photo = $_FILES['photo']['name'];
     $salary = trim($_POST['salary']);
 
-    if ($hall_id == ""):
+    if ($hall_id == "") {
         $hall_id = null;
-    endif;
+    }
 
+    // Валідація
     if (empty($last_name) || empty($first_name) || empty($position) || empty($hire_date) || empty($email) || empty($phone) || empty($salary)) {
         echo "<script>alert('Будь ласка, заповніть усі обов’язкові поля.');</script>";
     } else {
@@ -31,6 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $target_dir = "../employees_uploads/";
             $target_file = $target_dir . basename($photo);
             move_uploaded_file($_FILES['photo']['tmp_name'], $target_file);
+        } else {
+            $photo = $employee['photo']; // Використовуємо старе фото, якщо нове не завантажено
         }
 
         // Оновлення даних робітника
@@ -44,12 +53,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
     }
 } else {
+    // Завантаження даних робітника
     $stmt = $conn->prepare("SELECT * FROM employees WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
     $employee = $result->fetch_assoc();
     $stmt->close();
+
+    if (!$employee) {
+        echo "<script>alert('Робітника не знайдено.'); window.location.href = 'employees.php';</script>";
+        exit;
+    }
 }
 ?>
 
@@ -67,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container mt-5">
     <h3>Редагувати робітника</h3>
     <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="<?php echo $id; ?>">
         <div class="mb-3">
             <label for="last_name" class="form-label">Прізвище</label>
             <input type="text" class="form-control" id="last_name" name="last_name" value="<?php echo htmlspecialchars($employee['last_name']); ?>" required>
@@ -81,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="mb-3">
             <label for="salary" class="form-label">Зарплата</label>
-            <input type="number" class="form-control" id="position" name="salary" value="<?php echo htmlspecialchars($employee['salary']); ?>" required>
+            <input type="number" class="form-control" id="salary" name="salary" value="<?php echo htmlspecialchars($employee['salary']); ?>" required>
         </div>
         <div class="mb-3">
             <label for="hire_date" class="form-label">Дата найму</label>

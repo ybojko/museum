@@ -118,7 +118,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                         <td><?php echo htmlspecialchars($row['description']); ?></td>
                         <?php if ($role === 'admin'): ?>
                             <td>
-                                <a href="editHall.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">Редагувати</a>
+                                <form method="POST" action="editHall.php" style="display: inline;">
+                                    <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                    <button type="submit" class="btn btn-warning btn-sm">Редагувати</button>
+                                </form>
                                 <button class="btn btn-danger btn-sm" onclick="confirmDelete('<?php echo htmlspecialchars($row['name']); ?>', <?php echo $row['id']; ?>)">Видалити</button>
                             </td>
                         <?php endif; ?>

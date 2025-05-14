@@ -6,9 +6,15 @@ if ($_SESSION['role'] !== 'admin') {
     exit;
 }
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+// Отримання id через POST або GET
+$id = isset($_POST['id']) ? intval($_POST['id']) : (isset($_GET['id']) ? intval($_GET['id']) : 0);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($id === 0) {
+    echo "<script>alert('Невірний запит. ID не передано.'); window.location.href = 'exhibits.php';</script>";
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
     $year_created = trim($_POST['year_created']);
@@ -19,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Валідація
     $valid_conditions = ['good', 'medium', 'bad'];
-    if (empty($name) || empty($description) || empty($year_created) || empty($condition_status) || !in_array($condition_status, $valid_conditions)) {
+    if (empty($name) || empty($description) || empty($year_created) || empty($condition_status) || !in_array($condition_status, $valid_conditions) || !is_numeric($hall_id)) {
         echo "<script>alert('Будь ласка, заповніть усі обов’язкові поля та виберіть коректний стан.');</script>";
     } else {
         // Завантаження фото
@@ -27,11 +33,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $target_dir = "../exhibits_uploads/";
             $target_file = $target_dir . basename($photo);
             move_uploaded_file($_FILES['photo']['tmp_name'], $target_file);
+        } else {
+            $photo = $exhibit['photo']; // Використовуємо старе фото, якщо нове не завантажено
         }
 
         // Оновлення експонату
-        $stmt = $conn->prepare("UPDATE exhibits SET name = ?, description = ?, year_created = ?, condition_status = ?, hall_id = ?, last_restoration = ?, photo = ? WHERE id = ?");
-        $stmt->bind_param("ssissssi", $name, $description, $year_created, $condition_status, $hall_id, $last_restoration, $photo, $id);
+        if (!empty($photo)) {
+            $stmt = $conn->prepare("UPDATE exhibits SET name = ?, description = ?, year_created = ?, condition_status = ?, hall_id = ?, last_restoration = ?, photo = ? WHERE id = ?");
+            $stmt->bind_param("ssissssi", $name, $description, $year_created, $condition_status, $hall_id, $last_restoration, $photo, $id);
+        } else {
+            $stmt = $conn->prepare("UPDATE exhibits SET name = ?, description = ?, year_created = ?, condition_status = ?, hall_id = ?, last_restoration = ? WHERE id = ?");
+            $stmt->bind_param("ssisssi", $name, $description, $year_created, $condition_status, $hall_id, $last_restoration, $id);
+        }
+
         if ($stmt->execute()) {
             echo "<script>alert('Експонат успішно оновлено!'); window.location.href = 'exhibits.php';</script>";
         } else {
@@ -46,6 +60,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $stmt->get_result();
     $exhibit = $result->fetch_assoc();
     $stmt->close();
+
+    if (!$exhibit) {
+        echo "<script>alert('Експонат не знайдено.'); window.location.href = 'exhibits.php';</script>";
+        exit;
+    }
 }
 ?>
 
@@ -63,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container mt-5">
     <h3>Редагувати експонат</h3>
     <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="<?php echo $id; ?>">
         <div class="mb-3">
             <label for="name" class="form-label">Назва</label>
             <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($exhibit['name']); ?>" required>
@@ -73,7 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="mb-3">
             <label for="year_created" class="form-label">Рік створення</label>
-            <input type="number" class="form-control" id="year_created" name="year_created" min="-9999" max="2025" required>        </div>
+            <input type="number" class="form-control" id="year_created" name="year_created" min="-9999" max="2025" value="<?php echo htmlspecialchars($exhibit['year_created']); ?>" required>
+        </div>
         <div class="mb-3">
             <label for="condition_status" class="form-label">Стан</label>
             <select class="form-select" id="condition_status" name="condition_status" required>

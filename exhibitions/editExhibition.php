@@ -6,9 +6,15 @@ if ($_SESSION['role'] !== 'admin') {
     exit;
 }
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+// Отримання id через POST або GET
+$id = isset($_POST['id']) ? intval($_POST['id']) : (isset($_GET['id']) ? intval($_GET['id']) : 0);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($id === 0) {
+    echo "<script>alert('Невірний запит. ID не передано.'); window.location.href = 'exhibitions.php';</script>";
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
     $title = trim($_POST['title']);
     $start_date = trim($_POST['start_date']);
     $end_date = trim($_POST['end_date']);
@@ -30,12 +36,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
     }
 } else {
+    // Завантаження даних виставки
     $stmt = $conn->prepare("SELECT * FROM exhibitions WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
     $exhibition = $result->fetch_assoc();
     $stmt->close();
+
+    if (!$exhibition) {
+        echo "<script>alert('Виставку не знайдено.'); window.location.href = 'exhibitions.php';</script>";
+        exit;
+    }
 }
 ?>
 
@@ -53,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container mt-5">
     <h3>Редагувати виставку</h3>
     <form method="POST">
+        <input type="hidden" name="id" value="<?php echo $id; ?>">
         <div class="mb-3">
             <label for="title" class="form-label">Назва</label>
             <input type="text" class="form-control" id="title" name="title" value="<?php echo htmlspecialchars($exhibition['title']); ?>" required>

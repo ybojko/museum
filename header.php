@@ -17,11 +17,22 @@
                     <a class="nav-link" href="/museum/exhibitions/exhibitions.php">Виставки</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="/museum/tickets/tickets.php">Квитки</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="/museum/halls/halls.php">Зали</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/museum/restorations/restorations.php">Реставрації</a>
                 </li>
                 <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                     <li class="nav-item">
                         <a class="nav-link" href="/museum/employees/employees.php">Робітники</a>
+                    </li>
+                <?php endif; ?>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/museum/visitors/visitors.php">Відвідувачі</a>
                     </li>
                 <?php endif; ?>
                 <?php if (isset($_SESSION['user_id'])): ?>
