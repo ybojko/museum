@@ -9,7 +9,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // Отримання id через POST або GET
 $id = isset($_POST['id']) ? intval($_POST['id']) : (isset($_GET['id']) ? intval($_GET['id']) : 0);
 
-if ($id === 0) {
+if ($id === 0 || !is_numeric($id)) {
     echo "<script>alert('Невірний запит. ID не передано.'); window.location.href = 'halls.php';</script>";
     exit;
 }
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
     $name = trim($_POST['name']);
     $floor = trim($_POST['floor']);
     $description = trim($_POST['description']);
-
+   
     // Валідація
     if (empty($name) || empty($floor)) {
         echo "<script>alert('Назва та поверх є обов’язковими!');</script>";

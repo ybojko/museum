@@ -1,0 +1,764 @@
+/* Museum Theme CSS */
+:root {
+    --museum-primary: #8B4513;
+    --museum-secondary: #D2691E;
+    --museum-accent: #CD853F;
+    --museum-gold: #FFD700;
+    --museum-dark: #654321;
+    --museum-light: #F5F5DC;
+    --museum-gradient: linear-gradient(135deg, #8B4513 0%, #D2691E 50%, #CD853F 100%);
+    --shadow-light: 0 2px 10px rgba(139, 69, 19, 0.1);
+    --shadow-medium: 0 5px 20px rgba(139, 69, 19, 0.2);
+    --shadow-heavy: 0 10px 30px rgba(139, 69, 19, 0.3);
+}
+
+/* Body and Global Styles */
+body {
+    background: linear-gradient(to bottom, #F5F5DC 0%, #FAEBD7 100%);
+    min-height: 100vh;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: var(--museum-dark);
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="0.5" fill="%23D2691E" opacity="0.05"/><circle cx="80" cy="40" r="0.3" fill="%238B4513" opacity="0.03"/><circle cx="40" cy="80" r="0.4" fill="%23CD853F" opacity="0.04"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Navigation Styles */
+.navbar {
+    background: var(--museum-gradient) !important;
+    box-shadow: var(--shadow-medium);
+    border-bottom: 3px solid var(--museum-gold);
+    padding: 15px 0;
+}
+
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.navbar-brand::before {
+    content: '🏛️';
+    margin-right: 10px;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: white !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 8px 16px !important;
+    border-radius: 25px;
+    margin: 0 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: all 0.5s ease;
+}
+
+.nav-link:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.nav-link:hover::before {
+    left: 100%;
+}
+
+.nav-link.active {
+    background: var(--museum-gold);
+    color: var(--museum-dark) !important;
+    font-weight: bold;
+}
+
+/* Card Styles */
+.museum-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid var(--museum-accent);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.museum-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--museum-gradient);
+}
+
+.museum-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-heavy);
+}
+
+/* Form Styles */
+.museum-form {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: var(--shadow-heavy);
+    border: 1px solid var(--museum-accent);
+    position: relative;
+    overflow: hidden;
+}
+
+.museum-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: var(--museum-gradient);
+}
+
+.form-label {
+    color: var(--museum-dark);
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.form-control {
+    border: 2px solid var(--museum-light);
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+    background: #FAFAFA;
+}
+
+.form-control:focus {
+    border-color: var(--museum-secondary);
+    box-shadow: 0 0 0 0.2rem rgba(210, 105, 30, 0.25);
+    background: white;
+}
+
+.form-select {
+    border: 2px solid var(--museum-light);
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+    background: #FAFAFA;
+}
+
+.form-select:focus {
+    border-color: var(--museum-secondary);
+    box-shadow: 0 0 0 0.2rem rgba(210, 105, 30, 0.25);
+}
+
+/* Button Styles */
+.btn-museum {
+    background: var(--museum-gradient);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-museum::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: all 0.5s ease;
+}
+
+.btn-museum:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(139, 69, 19, 0.4);
+    color: white;
+}
+
+.btn-museum:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: var(--museum-gradient);
+    border: none;
+    border-radius: 25px;
+    padding: 12px 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+}
+
+/* Alert Styles */
+.alert {
+    border-radius: 15px;
+    border: none;
+    padding: 20px;
+    margin-bottom: 25px;
+    position: relative;
+    overflow: hidden;
+}
+
+.alert::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+}
+
+.alert-success::before {
+    background: #28a745;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    color: #0c5460;
+}
+
+.alert-info::before {
+    background: #17a2b8;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
+}
+
+.alert-warning::before {
+    background: #ffc107;
+}
+
+/* Container Enhancements */
+.container {
+    position: relative;
+}
+
+/* Page Titles */
+.page-title {
+    text-align: center;
+    color: var(--museum-dark);
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.page-title::after {
+    content: '';
+    display: block;
+    width: 100px;
+    height: 4px;
+    background: var(--museum-gradient);
+    margin: 15px auto;
+    border-radius: 2px;
+}
+
+/* Welcome Section */
+.welcome-section {
+    text-align: center;
+    padding: 60px 0;
+    background: white;
+    border-radius: 20px;
+    margin: 30px 0;
+    box-shadow: var(--shadow-medium);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: var(--museum-gradient);
+}
+
+.welcome-title {
+    font-size: 3rem;
+    color: var(--museum-dark);
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.welcome-subtitle {
+    font-size: 1.3rem;
+    color: var(--museum-secondary);
+    margin-bottom: 30px;
+}
+
+/* Decorative Elements */
+.museum-icon {
+    font-size: 4rem;
+    color: var(--museum-gold);
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Hero Section Styles */
+.hero-section {
+    background: linear-gradient(135deg, var(--museum-light) 0%, #FAEBD7 50%, #F0E68C 100%);
+    padding: 80px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="heroPattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23D2691E" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23heroPattern)"/></svg>') repeat;
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--museum-dark);
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--museum-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    margin-top: 2rem;
+}
+
+.museum-showcase {
+    display: grid;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.showcase-item {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: var(--shadow-light);
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.showcase-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-medium);
+    border-color: var(--museum-accent);
+}
+
+.showcase-icon {
+    font-size: 3rem;
+    color: var(--museum-primary);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.showcase-item h3 {
+    color: var(--museum-dark);
+    margin-bottom: 1rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.showcase-item p {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Feature Cards */
+.feature-card {
+    background: white;
+    padding: 2.5rem 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-light);
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-heavy);
+    border-color: var(--museum-accent);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--museum-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: var(--shadow-medium);
+}
+
+.feature-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.feature-card h4 {
+    color: var(--museum-dark);
+    margin-bottom: 1rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+}
+
+.feature-card p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+/* Authentication Styles */
+.auth-container {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    padding: 4rem 0;
+}
+
+.auth-card {
+    background: white;
+    border-radius: 25px;
+    box-shadow: var(--shadow-heavy);
+    padding: 3rem;
+    border: 3px solid var(--museum-accent);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--museum-gradient);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.auth-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--museum-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: var(--shadow-medium);
+}
+
+.auth-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.auth-title {
+    color: var(--museum-dark);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    color: var(--museum-secondary);
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.auth-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.auth-form .form-label {
+    color: var(--museum-dark);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.auth-form .form-control {
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.auth-form .form-control:focus {
+    border-color: var(--museum-accent);
+    box-shadow: 0 0 0 0.2rem rgba(205, 133, 63, 0.25);
+}
+
+.auth-form .form-select {
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.auth-form .form-select:focus {
+    border-color: var(--museum-accent);
+    box-shadow: 0 0 0 0.2rem rgba(205, 133, 63, 0.25);
+}
+
+.auth-footer {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.auth-link {
+    color: var(--museum-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.auth-link:hover {
+    color: var(--museum-secondary);
+    text-decoration: underline;
+}
+
+/* Museum Button Variants */
+.btn-museum-primary {
+    background: var(--museum-gradient);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-light);
+}
+
+.btn-museum-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+    color: white;
+}
+
+.btn-museum-outline {
+    background: transparent;
+    border: 2px solid var(--museum-primary);
+    color: var(--museum-primary);
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.btn-museum-outline:hover {
+    background: var(--museum-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-light);
+}
+
+/* Museum Brand Styling */
+.museum-brand {
+    font-family: 'Playfair Display', serif !important;
+    font-weight: 700 !important;
+    font-size: 1.8rem !important;
+}
+
+/* Dropdown Menu Styling */
+.dropdown-menu {
+    border: none;
+    box-shadow: var(--shadow-medium);
+    border-radius: 12px;
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+}
+
+.dropdown-item {
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+    color: var(--museum-dark);
+    border-radius: 8px;
+    margin: 2px 8px;
+}
+
+.dropdown-item:hover {
+    background: var(--museum-light);
+    color: var(--museum-primary);
+}
+
+.dropdown-item i {
+    width: 20px;
+}
+
+/* User Menu Styling */
+.user-menu {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    margin-left: 0.5rem !important;
+}
+
+/* Enhanced Alert Styling */
+.alert-with-icon {
+    display: flex;
+    align-items: center;
+    border: none;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-light);
+}
+
+.alert-with-icon i {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.alert-museum-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    border-left: 5px solid #28a745;
+}
+
+.alert-museum-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    color: #0c5460;
+    border-left: 5px solid #17a2b8;
+}
+
+.alert-museum-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
+    border-left: 5px solid #ffc107;
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.8s ease-in;
+}
+
+.slide-up {
+    animation: slideUp 1s ease-out 0.3s both;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.4rem;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+    }
+    
+    .welcome-title {
+        font-size: 2.2rem;
+    }
+    
+    .museum-form {
+        padding: 25px;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .auth-card {
+        padding: 2rem;
+        margin: 1rem;
+    }
+    
+    .feature-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .museum-showcase {
+        gap: 1rem;
+    }
+    
+    .showcase-item {
+        padding: 1.5rem;
+    }
+}

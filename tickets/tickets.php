@@ -57,6 +57,7 @@ $result = $stmt->get_result();
                 <th>Дата завершення</th>
                 <th>Опис</th>
                 <th>Зал</th>
+                <th>Дії</th>
             </tr>
         </thead>
         <tbody>
@@ -72,11 +73,19 @@ $result = $stmt->get_result();
                         <td><?php echo htmlspecialchars($row['end_date']); ?></td>
                         <td><?php echo htmlspecialchars($row['description']); ?></td>
                         <td><?php echo htmlspecialchars($row['hall_name']); ?></td>
+                        <td>
+                            <?php if ($role !== 'admin' && $row['username'] === $username): ?>
+                                <form method="POST" action="../reviews/addReview.php" style="display: inline;">
+                                    <input type="hidden" name="exhibition_title" value="<?php echo htmlspecialchars($row['title']); ?>">
+                                    <button type="submit" class="btn btn-primary btn-sm">Написати відгук</button>
+                                </form>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 <?php endwhile; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="9" class="text-center">Нічого не знайдено</td>
+                    <td colspan="10" class="text-center">Нічого не знайдено</td>
                 </tr>
             <?php endif; ?>
         </tbody>

@@ -9,7 +9,7 @@ if ($_SESSION['role'] !== 'admin') {
 // Отримання id через POST або GET
 $id = isset($_POST['id']) ? intval($_POST['id']) : (isset($_GET['id']) ? intval($_GET['id']) : 0);
 
-if ($id === 0) {
+if ($id === 0 || !is_numeric($id)) {
     echo "<script>alert('Невірний запит. ID не передано.'); window.location.href = 'exhibitions.php';</script>";
     exit;
 }
