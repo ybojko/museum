@@ -1,5 +1,5 @@
 <?php
-include '../connectionString.php'; // Підключення до бази даних
+include '../connectionString.php';
 
 if ($_SESSION['role'] !== 'admin') {
     header('Location: exhibits.php');
@@ -15,19 +15,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $last_restoration = trim($_POST['last_restoration']);
     $photo = $_FILES['photo']['name'];
 
-    // Валідація
     $valid_conditions = ['good', 'medium', 'bad'];
     if (empty($name) || empty($description) || empty($year_created) || empty($condition_status) || !in_array($condition_status, $valid_conditions)) {
-        echo "<script>alert('Будь ласка, заповніть усі обов’язкові поля та виберіть коректний стан.');</script>";
+        echo "<script>alert('Будь ласка, заповніть усі обов'язкові поля та виберіть коректний стан.');</script>";
     } else {
-        // Завантаження фото
         if (!empty($photo)) {
             $target_dir = "../exhibits_uploads/";
             $target_file = $target_dir . basename($photo);
             move_uploaded_file($_FILES['photo']['tmp_name'], $target_file);
         }
 
-        // Додавання нового експонату
         $stmt = $conn->prepare("INSERT INTO exhibits (name, description, year_created, condition_status, hall_id, last_restoration, photo) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssissss", $name, $description, $year_created, $condition_status, $hall_id, $last_restoration, $photo);
         if ($stmt->execute()) {

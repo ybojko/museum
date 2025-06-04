@@ -6,7 +6,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-// Отримання id через POST або GET
 $id = isset($_POST['id']) ? intval($_POST['id']) : (isset($_GET['id']) ? intval($_GET['id']) : 0);
 
 if ($id === 0 || !is_numeric($id)) {
@@ -19,11 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
     $floor = trim($_POST['floor']);
     $description = trim($_POST['description']);
    
-    // Валідація
     if (empty($name) || empty($floor)) {
-        echo "<script>alert('Назва та поверх є обов’язковими!');</script>";
+        echo "<script>alert('Назва та поверх є обов'язковими!');</script>";
     } else {
-        // Оновлення залу
         $stmt = $conn->prepare("UPDATE halls SET name = ?, floor = ?, description = ? WHERE id = ?");
         $stmt->bind_param("sisi", $name, $floor, $description, $id);
         if ($stmt->execute()) {
@@ -34,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
         $stmt->close();
     }
 } else {
-    // Завантаження даних залу
     $stmt = $conn->prepare("SELECT * FROM halls WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();

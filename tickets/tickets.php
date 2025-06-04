@@ -1,5 +1,5 @@
 <?php
-include '../connectionString.php'; // Підключення до бази даних
+include '../connectionString.php'; 
 
 if (!isset($_SESSION['role'])) {
     header('Location: ../index.php');
@@ -9,13 +9,10 @@ if (!isset($_SESSION['role'])) {
 $role = $_SESSION['role'];
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
 
-// Формування SQL-запиту
 if ($role === 'admin') {
-    // Адміністратор бачить усі квитки
     $sql = "SELECT * FROM ticket_details_view";
     $stmt = $conn->prepare($sql);
 } else {
-    // Звичайний користувач бачить лише свої квитки
     $sql = "SELECT * FROM ticket_details_view WHERE username = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $username);
@@ -55,7 +52,6 @@ $result = $stmt->get_result();
                     </div>
                 </div>
 
-                <!-- Таблиця з квитками -->
                 <div class="table-responsive">
                     <table class="table museum-table">
                         <thead>

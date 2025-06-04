@@ -1,7 +1,6 @@
 <?php
 include 'connectionString.php';
 
-// Перевірка авторизації
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
@@ -9,7 +8,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Отримання інформації користувача
 $stmt = $conn->prepare("SELECT username, email, user_type, created_at FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -21,7 +19,6 @@ if (!$user) {
     exit;
 }
 
-// Отримання статистики користувача
 $stats = [
     'account_age' => floor((time() - strtotime($user['created_at'])) / (60 * 60 * 24)),
     'user_type_label' => $user['user_type'] === 'benefitial' ? 'Пільговий користувач' : 'Звичайний користувач'
@@ -44,7 +41,6 @@ $stats = [
 <div class="museum-content">
     <div class="container mt-5">
         <div class="row">
-            <!-- Основна інформація профілю -->
             <div class="col-md-8">
                 <div class="museum-card">
                     <div class="card-body">
@@ -106,7 +102,6 @@ $stats = [
                 </div>
             </div>
 
-            <!-- Бічна панель з додатковою інформацією -->
             <div class="col-md-4">
                 <div class="museum-card mb-4">
                     <div class="card-body text-center">
@@ -138,7 +133,6 @@ $stats = [
             </div>
         </div>
 
-        <!-- Швидкі дії -->
         <div class="row mt-4">
             <div class="col-12">
                 <div class="museum-card">

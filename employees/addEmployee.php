@@ -24,14 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($last_name) || empty($first_name) || empty($position) || empty($hire_date) || empty($email) || empty($phone)) {
         echo "<script>alert('Будь ласка, заповніть усі обов’язкові поля.');</script>";
     } else {
-        // Завантаження фото
         if (!empty($photo)) {
             $target_dir = "../employees_uploads/";
             $target_file = $target_dir . basename($photo);
             move_uploaded_file($_FILES['photo']['tmp_name'], $target_file);
         }
 
-        // Додавання нового робітника
         $stmt = $conn->prepare("INSERT INTO employees (last_name, first_name, position, hire_date, email, phone, hall_id, photo, salary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssssiss", $last_name, $first_name, $position, $hire_date, $email, $phone, $hall_id, $photo, $salary);
         if ($stmt->execute()) {

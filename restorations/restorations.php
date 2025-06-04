@@ -1,10 +1,8 @@
 <?php
-include '../connectionString.php'; // Підключення до бази даних
+include '../connectionString.php';
 
-// Отримання ролі користувача
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'guest';
 
-// Видалення запису (тільки для адміна)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role === 'admin') {
     $delete_id = $_POST['delete_id'];
 
@@ -18,34 +16,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role
     $delete_stmt->close();
 }
 
-// Отримання параметрів пошуку
 $employee_id_filter = isset($_GET['employee_id']) ? intval($_GET['employee_id']) : '';
 $description_filter = isset($_GET['description']) ? trim($_GET['description']) : '';
 $order = isset($_GET['order']) && in_array($_GET['order'], ['asc', 'desc']) ? $_GET['order'] : 'asc'; // Порядок сортування
 
-// Формування SQL-запиту
 $sql = "SELECT * FROM restorations WHERE 1=1";
 $params = [];
 $types = "";
 
-// Додавання пошуку за employee_id
 if (!empty($employee_id_filter)) {
     $sql .= " AND employee_id = ?";
     $params[] = $employee_id_filter;
     $types .= "i";
 }
 
-// Додавання пошуку за description
 if (!empty($description_filter)) {
     $sql .= " AND description LIKE ?";
     $params[] = "%" . $description_filter . "%";
     $types .= "s";
 }
 
-// Додавання сортування
 $sql .= " ORDER BY restoration_date $order";
 
-// Підготовка запиту
 $stmt = $conn->prepare($sql);
 if (!empty($params)) {
     $stmt->bind_param($types, ...$params);
@@ -94,7 +86,6 @@ $result = $stmt->get_result();
                 </div>
                 <?php endif; ?>
 
-                <!-- Форма пошуку -->
                 <div class="museum-card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">
@@ -118,7 +109,7 @@ $result = $stmt->get_result();
                             </div>
                         </form>
                     </div>
-                </div>                <!-- Таблиця з даними -->
+                </div>            
                 <div class="table-responsive">
                     <table class="table museum-table">
                         <thead>

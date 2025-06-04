@@ -84,7 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                     </div>
                 </div>
 
-                <!-- Форма пошуку -->
                 <div class="museum-card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">
@@ -103,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                             </div>
                         </form>
                     </div>
-                </div>                <!-- Таблиця з даними -->
+                </div>              
                 <div class="table-responsive">
                     <table class="table museum-table">
                         <thead>

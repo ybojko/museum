@@ -18,16 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role
     $delete_stmt->close();
 }
 
-// Отримання параметрів пошуку та фільтрації
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $condition_filter = isset($_GET['condition_status']) ? trim($_GET['condition_status']) : '';
 
-// Формування SQL-запиту
 $sql = "SELECT * FROM exhibit_view WHERE 1=1";
 $params = [];
 $types = "";
 
-// Додавання пошуку
 if (!empty($search)) {
     $sql .= " AND (name LIKE ? OR description LIKE ? OR year_created LIKE ? OR hall_name LIKE ? OR last_restoration LIKE ?)";
     $search_param = "%$search%";
@@ -35,14 +32,12 @@ if (!empty($search)) {
     $types = str_repeat("s", 5);
 }
 
-// Додавання фільтрації за станом
 if (!empty($condition_filter)) {
     $sql .= " AND condition_status = ?";
     $params[] = $condition_filter;
     $types .= "s";
 }
 
-// Підготовка запиту
 $stmt = $conn->prepare($sql);
 if (!empty($params)) {
     $stmt->bind_param($types, ...$params);
@@ -91,7 +86,6 @@ $result = $stmt->get_result();
                 </div>
                 <?php endif; ?>
 
-                <!-- Форма пошуку та фільтрації -->
                 <div class="museum-card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">
@@ -118,7 +112,7 @@ $result = $stmt->get_result();
                             </div>
                         </form>
                     </div>
-                </div>                <!-- Таблиця з даними -->
+                </div>           
                 <div class="table-responsive">
                     <table class="table museum-table">
                         <thead>

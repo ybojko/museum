@@ -1,21 +1,18 @@
 <?php
-include '../connectionString.php'; // Підключення до бази даних
+include '../connectionString.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: ../index.php');
     exit;
 }
 
-// Отримання параметрів пошуку та фільтрації
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $visitor_type_filter = isset($_GET['visitor_type']) && in_array($_GET['visitor_type'], ['default', 'benefitial']) ? $_GET['visitor_type'] : '';
 
-// Формування SQL-запиту для таблиці visitors
 $sql_visitors = "SELECT * FROM visitors WHERE 1=1";
 $params_visitors = [];
 $types_visitors = "";
 
-// Додавання пошуку для visitors
 if (!empty($search)) {
     $sql_visitors .= " AND (last_name LIKE ? OR first_name LIKE ? OR email LIKE ?)";
     $search_param = "%$search%";
@@ -23,14 +20,12 @@ if (!empty($search)) {
     $types_visitors .= str_repeat("s", 3);
 }
 
-// Додавання фільтрації за visitor_type
 if (!empty($visitor_type_filter)) {
     $sql_visitors .= " AND visitor_type = ?";
     $params_visitors[] = $visitor_type_filter;
     $types_visitors .= "s";
 }
 
-// Підготовка запиту для visitors
 $stmt_visitors = $conn->prepare($sql_visitors);
 if (!empty($params_visitors)) {
     $stmt_visitors->bind_param($types_visitors, ...$params_visitors);
@@ -38,12 +33,10 @@ if (!empty($params_visitors)) {
 $stmt_visitors->execute();
 $result_visitors = $stmt_visitors->get_result();
 
-// Формування SQL-запиту для таблиці users
 $sql_users = "SELECT id, username, email, created_at, user_type FROM users WHERE role = 'user'";
 $params_users = [];
 $types_users = "";
 
-// Додавання пошуку для users
 if (!empty($search)) {
     $sql_users .= " AND (username LIKE ? OR email LIKE ?)";
     $search_param = "%$search%";
@@ -51,14 +44,12 @@ if (!empty($search)) {
     $types_users .= str_repeat("s", 2);
 }
 
-// Додавання фільтрації за user_type
 if (!empty($visitor_type_filter)) {
     $sql_users .= " AND user_type = ?";
     $params_users[] = $visitor_type_filter;
     $types_users .= "s";
 }
 
-// Підготовка запиту для users
 $stmt_users = $conn->prepare($sql_users);
 if (!empty($params_users)) {
     $stmt_users->bind_param($types_users, ...$params_users);
@@ -97,7 +88,6 @@ $result_users = $stmt_users->get_result();
                     </div>
                 </div>
 
-                <!-- Форма пошуку -->
                 <div class="museum-card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">
@@ -125,7 +115,6 @@ $result_users = $stmt_users->get_result();
                     </div>
                 </div>
 
-                <!-- Офлайн-відвідувачі -->
                 <div class="museum-card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">
@@ -187,7 +176,6 @@ $result_users = $stmt_users->get_result();
                     </div>
                 </div>
 
-                <!-- Онлайн-відвідувачі -->
                 <div class="museum-card">
                     <div class="card-body">
                         <h5 class="card-title">

@@ -1,13 +1,11 @@
 <?php
-include '../connectionString.php'; // Підключення до бази даних
+include '../connectionString.php'; 
 
-// Перевірка авторизації
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: ../index.php');
     exit;
 }
 
-// Отримання всіх відгуків
 $sql = "SELECT * FROM reviews ORDER BY review_date DESC";
 $result = $conn->query($sql);
 ?>
@@ -34,7 +32,6 @@ $result = $conn->query($sql);
                     <h3 class="museum-title mb-0">Всі відгуки</h3>
                 </div>
 
-                <!-- Таблиця з відгуками -->
                 <div class="table-responsive">
                     <table class="table museum-table">
                         <thead>

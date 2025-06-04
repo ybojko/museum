@@ -1,16 +1,13 @@
 <?php
-include '../connectionString.php'; // Підключення до бази даних
+include '../connectionString.php'; 
 
-// Отримання параметрів пошуку та фільтрації
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $floor_filter = isset($_GET['floor']) ? trim($_GET['floor']) : '';
 
-// Формування SQL-запиту
 $sql = "SELECT * FROM halls WHERE 1=1";
 $params = [];
 $types = "";
 
-// Додавання пошуку
 if (!empty($search)) {
     $sql .= " AND (name LIKE ? OR description LIKE ?)";
     $params[] = "%$search%";
@@ -18,14 +15,12 @@ if (!empty($search)) {
     $types .= "ss";
 }
 
-// Додавання фільтрації за поверхами
 if (!empty($floor_filter)) {
     $sql .= " AND floor = ?";
     $params[] = $floor_filter;
     $types .= "s";
 }
 
-// Підготовка запиту
 $stmt = $conn->prepare($sql);
 if (!empty($params)) {
     $stmt->bind_param($types, ...$params);
@@ -33,7 +28,6 @@ if (!empty($params)) {
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Видалення запису
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $delete_id = $_POST['delete_id'];
 
@@ -91,7 +85,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                 </div>
                 <?php endif; ?>
 
-                <!-- Форма пошуку та фільтрації -->
                 <div class="museum-card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">
@@ -118,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                             </div>
                         </form>
                     </div>
-                </div>                <!-- Таблиця з даними -->
+                </div>              
                 <div class="table-responsive">
                     <table class="table museum-table">
                         <thead>

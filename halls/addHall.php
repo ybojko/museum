@@ -5,14 +5,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
     $floor = trim($_POST['floor']);
     $description = trim($_POST['description']);
 
     if (empty($name) || empty($floor)) {
-        echo "<script>alert('Назва та поверх є обов’язковими!');</script>";
+        echo "<script>alert('Назва та поверх є обов'язковими!');</script>";
     } else {
         $stmt = $conn->prepare("INSERT INTO halls (name, floor, description) VALUES (?, ?, ?)");
         $stmt->bind_param("sis", $name, $floor, $description);

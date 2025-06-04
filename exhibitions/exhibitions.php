@@ -1,10 +1,8 @@
 <?php
-include '../connectionString.php'; // Підключення до бази даних
+include '../connectionString.php';
 
-// Отримання ролі користувача
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'guest';
 
-// Видалення запису (тільки для адміна)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role === 'admin') {
     $delete_id = $_POST['delete_id'];
 
@@ -18,15 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role
     $delete_stmt->close();
 }
 
-// Отримання параметрів пошуку
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Формування SQL-запиту
 $sql = "SELECT * FROM exhibition_view WHERE 1=1";
 $params = [];
 $types = "";
 
-// Додавання пошуку
 if (!empty($search)) {
     $sql .= " AND (title LIKE ? OR start_date LIKE ? OR end_date LIKE ? OR description LIKE ? OR hall_name LIKE ?)";
     $search_param = "%$search%";
@@ -34,7 +29,6 @@ if (!empty($search)) {
     $types = str_repeat("s", 5);
 }
 
-// Підготовка запиту
 $stmt = $conn->prepare($sql);
 if (!empty($params)) {
     $stmt->bind_param($types, ...$params);
@@ -83,7 +77,6 @@ $result = $stmt->get_result();
                 </div>
                 <?php endif; ?>
 
-                <!-- Форма пошуку -->
                 <div class="museum-card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">
@@ -102,7 +95,7 @@ $result = $stmt->get_result();
                             </div>
                         </form>
                     </div>
-                </div>                <!-- Таблиця з даними -->
+                </div>              
                 <div class="table-responsive">
                     <table class="table museum-table">
                         <thead>

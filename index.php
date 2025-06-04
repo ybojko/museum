@@ -23,7 +23,6 @@
 	}
 ?>
 
-<!-- Hero Section -->
 <div class="hero-section">
     <div class="container">
         <div class="row align-items-center min-vh-75">
@@ -79,7 +78,6 @@
     </div>
 </div>
 
-<!-- Welcome Messages -->
 <div class="container my-5">
     <?php if ($role === 'admin'): ?>
         <div class="alert alert-museum-success alert-with-icon">
@@ -111,7 +109,6 @@
     <?php endif; ?>
 </div>
 
-<!-- Features Section -->
 <div class="container my-5">
     <div class="row g-4">
         <div class="col-md-4">

@@ -6,7 +6,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-// Отримання id через POST або GET
 $id = isset($_POST['id']) ? intval($_POST['id']) : (isset($_GET['id']) ? intval($_GET['id']) : 0);
 
 if ($id === 0 || !is_numeric($id)) {
@@ -29,20 +28,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['last_name'])) {
         $hall_id = null;
     }
 
-    // Валідація
     if (empty($last_name) || empty($first_name) || empty($position) || empty($hire_date) || empty($email) || empty($phone) || empty($salary)) {
         echo "<script>alert('Будь ласка, заповніть усі обов’язкові поля.');</script>";
     } else {
-        // Завантаження фото
         if (!empty($photo)) {
             $target_dir = "../employees_uploads/";
             $target_file = $target_dir . basename($photo);
             move_uploaded_file($_FILES['photo']['tmp_name'], $target_file);
         } else {
-            $photo = $employee['photo']; // Використовуємо старе фото, якщо нове не завантажено
+            $photo = $employee['photo']; якщо нове не завантажено
         }
 
-        // Оновлення даних робітника
         $stmt = $conn->prepare("UPDATE employees SET last_name = ?, first_name = ?, position = ?, hire_date = ?, email = ?, phone = ?, hall_id = ?, photo = ?, salary = ? WHERE id = ?");
         $stmt->bind_param("ssssssisis", $last_name, $first_name, $position, $hire_date, $email, $phone, $hall_id, $photo, $salary, $id);
         if ($stmt->execute()) {
@@ -53,7 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['last_name'])) {
         $stmt->close();
     }
 } else {
-    // Завантаження даних робітника
     $stmt = $conn->prepare("SELECT * FROM employees WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();

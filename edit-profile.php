@@ -1,7 +1,6 @@
 <?php
 include 'connectionString.php';
 
-// Перевірка авторизації
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
@@ -11,7 +10,6 @@ $user_id = $_SESSION['user_id'];
 $success_message = '';
 $error_message = '';
 
-// Отримання поточної інформації користувача
 $stmt = $conn->prepare("SELECT username, email, user_type FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -23,7 +21,6 @@ if (!$user) {
     exit;
 }
 
-// Обробка форми оновлення профілю
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
@@ -32,13 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
     
-    // Валідація
     if (empty($username) || empty($email)) {
         $error_message = "Ім'я користувача та email є обов'язковими полями.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = "Введіть коректний email адрес.";
     } else {
-        // Перевірка унікальності username та email (окрім поточного користувача)
         $check_stmt = $conn->prepare("SELECT id FROM users WHERE (username = ? OR email = ?) AND id != ?");
         $check_stmt->bind_param("ssi", $username, $email, $user_id);
         $check_stmt->execute();
@@ -47,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($check_result->num_rows > 0) {
             $error_message = "Ім'я користувача або email вже використовуються іншим користувачем.";
         } else {
-            // Якщо користувач хоче змінити пароль
             if (!empty($new_password)) {
                 if (empty($current_password)) {
                     $error_message = "Введіть поточний пароль для зміни.";
@@ -56,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } elseif (strlen($new_password) < 6) {
                     $error_message = "Новий пароль повинен містити щонайменше 6 символів.";
                 } else {
-                    // Перевірка поточного пароля
                     $password_stmt = $conn->prepare("SELECT password FROM users WHERE id = ?");
                     $password_stmt->bind_param("i", $user_id);
                     $password_stmt->execute();
@@ -66,7 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (!password_verify($current_password, $password_data['password'])) {
                         $error_message = "Поточний пароль введено невірно.";
                     } else {
-                        // Оновлення з новим паролем
                         $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
                         $update_stmt = $conn->prepare("UPDATE users SET username = ?, email = ?, user_type = ?, password = ? WHERE id = ?");
                         $update_stmt->bind_param("ssssi", $username, $email, $user_type, $hashed_password, $user_id);
@@ -83,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
             } else {
-                // Оновлення без зміни пароля
                 $update_stmt = $conn->prepare("UPDATE users SET username = ?, email = ?, user_type = ? WHERE id = ?");
                 $update_stmt->bind_param("sssi", $username, $email, $user_type, $user_id);
                 
@@ -214,14 +205,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Валідація форми на клієнтській стороні
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
     const newPassword = document.getElementById('new_password');
     const confirmPassword = document.getElementById('confirm_password');
     const currentPassword = document.getElementById('current_password');
 
-    // Перевірка співпадіння паролів
     function checkPasswordMatch() {
         if (newPassword.value && confirmPassword.value) {
             if (newPassword.value !== confirmPassword.value) {
@@ -235,7 +224,6 @@ document.addEventListener('DOMContentLoaded', function() {
     newPassword.addEventListener('input', checkPasswordMatch);
     confirmPassword.addEventListener('input', checkPasswordMatch);
 
-    // Перевірка, що поточний пароль введено, якщо вводиться новий
     newPassword.addEventListener('input', function() {
         if (this.value && !currentPassword.value) {
             currentPassword.setCustomValidity('Введіть поточний пароль для зміни');

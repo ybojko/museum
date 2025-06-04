@@ -1,5 +1,5 @@
 <?php
-include '../connectionString.php'; // Підключення до бази даних
+include '../connectionString.php';
 
 if ($_SESSION['role'] !== 'admin') {
     header('Location: exhibitions.php');
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description']);
 
     if (empty($title) || empty($start_date) || empty($hall_id)) {
-        echo "<script>alert('Будь ласка, заповніть усі обов’язкові поля.');</script>";
+        echo "<script>alert('Будь ласка, заповніть усі обов'язкові поля.');</script>";
     } else {
         $stmt = $conn->prepare("INSERT INTO exhibitions (title, start_date, end_date, hall_id, description) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssds", $title, $start_date, $end_date, $hall_id, $description);

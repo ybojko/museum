@@ -1,12 +1,11 @@
 <?php
-include '../connectionString.php'; 
+include '../connectionString.php';
 
 if ($_SESSION['role'] !== 'admin') {
     header('Location: exhibitions.php');
     exit;
 }
 
-// Отримання id через POST або GET
 $id = isset($_POST['id']) ? intval($_POST['id']) : (isset($_GET['id']) ? intval($_GET['id']) : 0);
 
 if ($id === 0 || !is_numeric($id)) {
@@ -21,11 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
     $hall_id = trim($_POST['hall_id']);
     $description = trim($_POST['description']);
 
-    // Валідація
     if (empty($title) || empty($start_date) || empty($hall_id)) {
-        echo "<script>alert('Будь ласка, заповніть усі обов’язкові поля.');</script>";
+        echo "<script>alert('Будь ласка, заповніть усі обов'язкові поля.');</script>";
     } else {
-        // Оновлення виставки
         $stmt = $conn->prepare("UPDATE exhibitions SET title = ?, start_date = ?, end_date = ?, hall_id = ?, description = ? WHERE id = ?");
         $stmt->bind_param("sssdsd", $title, $start_date, $end_date, $hall_id, $description, $id);
         if ($stmt->execute()) {
@@ -36,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
         $stmt->close();
     }
 } else {
-    // Завантаження даних виставки
     $stmt = $conn->prepare("SELECT * FROM exhibitions WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();

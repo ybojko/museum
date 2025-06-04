@@ -6,7 +6,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-// Отримання id через POST або GET
 $id = isset($_POST['id']) ? intval($_POST['id']) : (isset($_GET['id']) ? intval($_GET['id']) : 0);
 
 if ($id === 0 || !is_numeric($id)) {
@@ -20,11 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['exhibit_id'])) {
     $employee_id = trim($_POST['employee_id']);
     $description = trim($_POST['description']);
 
-    // Валідація
     if (empty($exhibit_id) || empty($restoration_date)) {
         echo "<script>alert('ID експоната та дата реставрації є обов'язковими!');</script>";
     } else {
-        // Оновлення реставрації
         $stmt = $conn->prepare("UPDATE restorations SET exhibit_id = ?, restoration_date = ?, employee_id = ?, description = ? WHERE id = ?");
         $stmt->bind_param("isisi", $exhibit_id, $restoration_date, $employee_id, $description, $id);
         if ($stmt->execute()) {
@@ -35,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['exhibit_id'])) {
         $stmt->close();
     }
 } else {
-    // Завантаження даних реставрації
     $stmt = $conn->prepare("SELECT * FROM restorations WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();

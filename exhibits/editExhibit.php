@@ -1,12 +1,11 @@
 <?php
-include '../connectionString.php'; // Підключення до бази даних
+include '../connectionString.php';
 
 if ($_SESSION['role'] !== 'admin') {
     header('Location: exhibits.php');
     exit;
 }
 
-// Отримання id через POST або GET
 $id = isset($_POST['id']) ? intval($_POST['id']) : (isset($_GET['id']) ? intval($_GET['id']) : 0);
 
 if ($id === 0 || !is_numeric($id)) {
@@ -23,21 +22,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
     $last_restoration = trim($_POST['last_restoration']);
     $photo = $_FILES['photo']['name'];
 
-    // Валідація
     $valid_conditions = ['good', 'medium', 'bad'];
     if (empty($name) || empty($description) || empty($year_created) || empty($condition_status) || !in_array($condition_status, $valid_conditions) || !is_numeric($hall_id)) {
-        echo "<script>alert('Будь ласка, заповніть усі обов’язкові поля та виберіть коректний стан.');</script>";
+        echo "<script>alert('Будь ласка, заповніть усі обов'язкові поля та виберіть коректний стан.');</script>";
     } else {
-        // Завантаження фото
         if (!empty($photo)) {
             $target_dir = "../exhibits_uploads/";
             $target_file = $target_dir . basename($photo);
             move_uploaded_file($_FILES['photo']['tmp_name'], $target_file);
         } else {
-            $photo = $exhibit['photo']; // Використовуємо старе фото, якщо нове не завантажено
+            $photo = $exhibit['photo'];
         }
 
-        // Оновлення експонату
         if (!empty($photo)) {
             $stmt = $conn->prepare("UPDATE exhibits SET name = ?, description = ?, year_created = ?, condition_status = ?, hall_id = ?, last_restoration = ?, photo = ? WHERE id = ?");
             $stmt->bind_param("ssissssi", $name, $description, $year_created, $condition_status, $hall_id, $last_restoration, $photo, $id);

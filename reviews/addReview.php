@@ -1,7 +1,6 @@
 <?php
-include '../connectionString.php'; // Підключення до бази даних
+include '../connectionString.php';
 
-// Перевірка авторизації
 if (!isset($_SESSION['role']) || !isset($_SESSION['username'])) {
     header('Location: ../index.php');
     exit;
@@ -13,13 +12,11 @@ $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'default';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $exhibition_title = isset($_POST['exhibition_title']) ? trim($_POST['exhibition_title']) : '';
     $review_text = isset($_POST['review_text']) ? trim($_POST['review_text']) : '';
-    $review_date = date('Y-m-d H:i:s'); // Поточна дата та час
+    $review_date = date('Y-m-d H:i:s');
 
-    // Валідація
     if (empty($exhibition_title) || empty($review_text)) {
         echo "<script>alert('Будь ласка, заповніть усі поля.');</script>";
     } else {
-        // Перевірка, чи існує вже відгук для цієї виставки від цього користувача
         $stmt_check = $conn->prepare("SELECT id FROM reviews WHERE username = ? AND exhibition_title = ?");
         $stmt_check->bind_param("ss", $username, $exhibition_title);
         $stmt_check->execute();
@@ -28,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt_check->num_rows > 0) {
             echo "<script>alert('Ви вже залишили відгук для цієї виставки.'); window.location.href = '../tickets/tickets.php';</script>";
         } else {
-            // Додавання відгуку до таблиці reviews
             $stmt = $conn->prepare("INSERT INTO reviews (username, user_type, exhibition_title, review_text, review_date) VALUES (?, ?, ?, ?, ?)");
             $stmt->bind_param("sssss", $username, $user_type, $exhibition_title, $review_text, $review_date);
             if ($stmt->execute()) {
@@ -62,7 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <select class="form-select" id="exhibition_title" name="exhibition_title" required>
                 <option value="">-- Виберіть виставку --</option>
                 <?php
-                // Отримання списку виставок із `ticket_details_view`
                 $stmt_exhibitions = $conn->prepare("SELECT DISTINCT title FROM ticket_details_view WHERE username = ?");
                 $stmt_exhibitions->bind_param("s", $username);
                 $stmt_exhibitions->execute();

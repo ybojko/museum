@@ -1,7 +1,6 @@
 <?php
-include '../connectionString.php'; // Підключення до бази даних
+include '../connectionString.php';
 
-// Перевірка авторизації
 if (!isset($_SESSION['role']) || !isset($_SESSION['user_id'])) {
     header('Location: ../index.php');
     exit;
@@ -13,13 +12,11 @@ $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $exhibition_id = intval($_POST['exhibition_id']);
-    $purchase_date = date('Y-m-d'); // Поточна дата
+    $purchase_date = date('Y-m-d');
 
-    // Валідація
     if ($exhibition_id <= 0) {
         echo "<script>alert('Будь ласка, виберіть виставку.');</script>";
     } else {
-        // Додавання квитка до таблиці tickets
         $stmt = $conn->prepare("INSERT INTO tickets (user_id, exhibition_id, purchase_date) VALUES (?, ?, ?)");
         $stmt->bind_param("iis", $user_id, $exhibition_id, $purchase_date);
         if ($stmt->execute()) {
@@ -31,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Отримання списку виставок із `exhibition_view`
 $stmt_exhibitions = $conn->prepare("SELECT id, title, start_date, end_date, hall_name FROM exhibition_view");
 $stmt_exhibitions->execute();
 $result_exhibitions = $stmt_exhibitions->get_result();
