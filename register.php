@@ -5,14 +5,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password']);
     $user_type = isset($_POST['user_type']) && in_array($_POST['user_type'], ['default', 'benefitial']) ? $_POST['user_type'] : 'default';
 
-    // Перевірка, чи всі поля заповнені
     if (empty($username) || empty($email) || empty($password)) {
         echo "<script>alert('Будь ласка, заповніть усі поля.');</script>";
     } else {
         include 'connectionString.php';
 
         try {
-            // Перевірка, чи існує користувач з таким ім'ям або електронною адресою
             $stmt = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
             $stmt->bind_param("ss", $username, $email);
             $stmt->execute();
@@ -21,9 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($stmt->num_rows > 0) {
                 echo "<script>alert('Користувач з таким ім\'ям або електронною адресою вже існує.');</script>";
             } else {
-                // Хешування пароля
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                // Додавання нового користувача
                 $stmt = $conn->prepare("INSERT INTO users (username, email, password, role, user_type, created_at) VALUES (?, ?, ?, 'user', ?, NOW())");
                 $stmt->bind_param("ssss", $username, $email, $hashed_password, $user_type);
                 if ($stmt->execute()) {
@@ -55,15 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/museum-theme.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-    <title>Реєстрація - Краєзнавчий музей</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/museum-theme.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
 <?php include 'header.php'; ?>
 

@@ -152,19 +152,19 @@ $result = $stmt->get_result();
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge museum-badge">
+                                            <span class="museum-badge">
                                                 <?php echo htmlspecialchars($row['year_created']); ?>
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge museum-badge">
+                                            <span class="museum-badge">
                                                 <i class="fas fa-door-open me-1"></i>
                                                 <?php echo htmlspecialchars($row['hall_name']); ?>
                                             </span>
                                         </td>
                                         <td>
                                             <?php if ($row['last_restoration']): ?>
-                                                <span class="badge badge-info">
+                                                <span class="badge-info">
                                                     <?php echo date('d.m.Y', strtotime($row['last_restoration'])); ?>
                                                 </span>
                                             <?php else: ?>
@@ -198,7 +198,7 @@ $result = $stmt->get_result();
                                                     $text = $condition;
                                             }
                                             ?>
-                                            <span class="badge <?php echo $badge_class; ?>">
+                                            <span class=" <?php echo $badge_class; ?>">
                                                 <i class="<?php echo $icon; ?> me-1"></i><?php echo $text; ?>
                                             </span>
                                         </td>

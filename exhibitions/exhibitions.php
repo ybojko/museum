@@ -129,13 +129,13 @@ $result = $stmt->get_result();
                                             </strong>
                                         </td>
                                         <td>
-                                            <span class="badge badge-success">
+                                            <span class="badge-success">
                                                 <i class="fas fa-play me-1"></i>
                                                 <?php echo date('d.m.Y', strtotime($row['start_date'])); ?>
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge badge-danger">
+                                            <span class="badge-danger">
                                                 <i class="fas fa-stop me-1"></i>
                                                 <?php echo date('d.m.Y', strtotime($row['end_date'])); ?>
                                             </span>
@@ -146,7 +146,7 @@ $result = $stmt->get_result();
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge museum-badge">
+                                            <span class="museum-badge">
                                                 <i class="fas fa-door-open me-1"></i>
                                                 <?php echo htmlspecialchars($row['hall_name']); ?>
                                             </span>

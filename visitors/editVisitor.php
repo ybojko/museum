@@ -55,37 +55,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['last_name'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Редагувати відвідувача</title>
+    <title>Редагувати відвідувача - Музей</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/museum-theme.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="museum-bg">
 <?php include '../header.php'; ?>
 
-<div class="container mt-5">
-    <h3>Редагувати відвідувача</h3>
-    <form method="POST">
-        <input type="hidden" name="id" value="<?php echo $id; ?>">
-        <div class="mb-3">
-            <label for="last_name" class="form-label">Прізвище</label>
-            <input type="text" class="form-control" id="last_name" name="last_name" value="<?php echo htmlspecialchars($visitor['last_name']); ?>" required>
+<div class="museum-content">
+    <div class="container mt-5">
+        <div class="museum-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fas fa-user-edit museum-icon me-3" style="font-size: 2rem; color: var(--museum-accent);"></i>
+                    <h3 class="museum-title mb-0">Редагувати відвідувача</h3>
+                </div>
+
+                <form method="POST">
+                    <input type="hidden" name="id" value="<?php echo $id; ?>">
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">
+                                <i class="fas fa-user me-2"></i>Прізвище
+                            </label>
+                            <input type="text" class="form-control museum-input" id="last_name" name="last_name" 
+                                   value="<?php echo htmlspecialchars($visitor['last_name']); ?>" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">
+                                <i class="fas fa-user me-2"></i>Ім'я
+                            </label>
+                            <input type="text" class="form-control museum-input" id="first_name" name="first_name" 
+                                   value="<?php echo htmlspecialchars($visitor['first_name']); ?>" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope me-2"></i>Email
+                        </label>
+                        <input type="email" class="form-control museum-input" id="email" name="email" 
+                               value="<?php echo htmlspecialchars($visitor['email']); ?>" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="visitor_type" class="form-label">
+                            <i class="fas fa-tag me-2"></i>Тип відвідувача
+                        </label>
+                        <select class="form-select museum-input" id="visitor_type" name="visitor_type" required>
+                            <option value="default" <?php echo $visitor['visitor_type'] === 'default' ? 'selected' : ''; ?>>Default</option>
+                            <option value="benefitial" <?php echo $visitor['visitor_type'] === 'benefitial' ? 'selected' : ''; ?>>Benefitial</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn museum-btn-primary">
+                            <i class="fas fa-save me-2"></i>Оновити
+                        </button>
+                        <a href="visitors.php" class="btn museum-btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Повернутися
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="first_name" class="form-label">Ім'я</label>
-            <input type="text" class="form-control" id="first_name" name="first_name" value="<?php echo htmlspecialchars($visitor['first_name']); ?>" required>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($visitor['email']); ?>" required>
-        </div>
-        <div class="mb-3">
-            <label for="visitor_type" class="form-label">Тип відвідувача</label>
-            <select class="form-select" id="visitor_type" name="visitor_type" required>
-                <option value="default" <?php echo $visitor['visitor_type'] === 'default' ? 'selected' : ''; ?>>Default</option>
-                <option value="benefitial" <?php echo $visitor['visitor_type'] === 'benefitial' ? 'selected' : ''; ?>>Benefitial</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-warning">Оновити</button>
-    </form>
+    </div>
 </div>
 
 <?php include '../footer.php'; ?>

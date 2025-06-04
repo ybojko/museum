@@ -1,5 +1,5 @@
 <?php
-include '../connectionString.php'; // Підключення до бази даних
+include '../connectionString.php'; 
 
 if ($_SESSION['role'] !== 'admin') {
     header('Location: exhibitions.php');
@@ -58,36 +58,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Редагувати виставку</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/museum-theme.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="museum-bg">
 <?php include '../header.php'; ?>
 
-<div class="container mt-5">
-    <h3>Редагувати виставку</h3>
-    <form method="POST">
-        <input type="hidden" name="id" value="<?php echo $id; ?>">
-        <div class="mb-3">
-            <label for="title" class="form-label">Назва</label>
-            <input type="text" class="form-control" id="title" name="title" value="<?php echo htmlspecialchars($exhibition['title']); ?>" required>
+<div class="museum-content">
+    <div class="container mt-5">
+        <div class="museum-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fas fa-edit museum-icon me-3" style="font-size: 2rem; color: var(--museum-accent);"></i>
+                    <h3 class="museum-title mb-0">Редагувати виставку</h3>
+                </div>
+
+                <div class="museum-card">
+                    <div class="card-body">
+                        <form method="POST">
+                            <input type="hidden" name="id" value="<?php echo $id; ?>">
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="title" class="form-label fw-bold">
+                                            <i class="fas fa-palette me-2"></i>Назва
+                                        </label>
+                                        <input type="text" class="form-control museum-input" id="title" name="title" value="<?php echo htmlspecialchars($exhibition['title']); ?>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="hall_id" class="form-label fw-bold">
+                                            <i class="fas fa-building me-2"></i>Зал
+                                        </label>
+                                        <input type="number" class="form-control museum-input" id="hall_id" name="hall_id" value="<?php echo htmlspecialchars($exhibition['hall_id']); ?>" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="start_date" class="form-label fw-bold">
+                                            <i class="fas fa-calendar-check me-2"></i>Дата початку
+                                        </label>
+                                        <input type="date" class="form-control museum-input" id="start_date" name="start_date" value="<?php echo htmlspecialchars($exhibition['start_date']); ?>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="end_date" class="form-label fw-bold">
+                                            <i class="fas fa-calendar-times me-2"></i>Дата завершення (опціонально)
+                                        </label>
+                                        <input type="date" class="form-control museum-input" id="end_date" name="end_date" value="<?php echo htmlspecialchars($exhibition['end_date']); ?>">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label fw-bold">
+                                    <i class="fas fa-align-left me-2"></i>Опис (опціонально)
+                                </label>
+                                <textarea class="form-control museum-input" id="description" name="description" rows="4"><?php echo htmlspecialchars($exhibition['description']); ?></textarea>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn museum-btn-secondary btn-lg">
+                                    <i class="fas fa-save me-2"></i>Оновити
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="start_date" class="form-label">Дата початку</label>
-            <input type="date" class="form-control" id="start_date" name="start_date" value="<?php echo htmlspecialchars($exhibition['start_date']); ?>" required>
-        </div>
-        <div class="mb-3">
-            <label for="end_date" class="form-label">Дата завершення (опціонально)</label>
-            <input type="date" class="form-control" id="end_date" name="end_date" value="<?php echo htmlspecialchars($exhibition['end_date']); ?>">
-        </div>
-        <div class="mb-3">
-            <label for="hall_id" class="form-label">Зал</label>
-            <input type="number" class="form-control" id="hall_id" name="hall_id" value="<?php echo htmlspecialchars($exhibition['hall_id']); ?>" required>
-        </div>
-        <div class="mb-3">
-            <label for="description" class="form-label">Опис (опціонально)</label>
-            <textarea class="form-control" id="description" name="description"><?php echo htmlspecialchars($exhibition['description']); ?></textarea>
-        </div>
-        <button type="submit" class="btn btn-warning">Оновити</button>
-    </form>
+    </div>
 </div>
 
 <?php include '../footer.php'; ?>

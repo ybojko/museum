@@ -149,20 +149,20 @@ $result = $stmt->get_result();
                                     <tr>
                                         <td><?php echo htmlspecialchars($row['id']); ?></td>
                                         <td>
-                                            <span class="badge museum-badge">
+                                            <span >
                                                 <i class="fas fa-gem me-1"></i>
                                                 <?php echo htmlspecialchars($row['exhibit_id']); ?>
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge badge-info">
+                                            <span class="badge-info">
                                                 <i class="fas fa-calendar me-1"></i>
                                                 <?php echo date('d.m.Y', strtotime($row['restoration_date'])); ?>
                                             </span>
                                         </td>
                                         <td>
                                             <?php if ($row['employee_id']): ?>
-                                                <span class="badge museum-badge">
+                                                <span class="museum-badge">
                                                     <i class="fas fa-user me-1"></i>
                                                     <?php echo htmlspecialchars($row['employee_id']); ?>
                                                 </span>

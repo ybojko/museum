@@ -49,53 +49,107 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Додати робітника</title>
+    <title>Додати робітника - Музей</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/museum-theme.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="museum-bg">
 <?php include '../header.php'; ?>
 
-<div class="container mt-5">
-    <h3>Додати нового робітника</h3>
-    <form method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="last_name" class="form-label">Прізвище</label>
-            <input type="text" class="form-control" id="last_name" name="last_name" required>
+<div class="museum-content">
+    <div class="container mt-5">
+        <div class="museum-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fas fa-user-plus museum-icon me-3" style="font-size: 2rem; color: var(--museum-accent);"></i>
+                    <h3 class="museum-title mb-0">Додати нового робітника</h3>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">
+                                <i class="fas fa-user me-2"></i>Прізвище
+                            </label>
+                            <input type="text" class="form-control museum-input" id="last_name" name="last_name" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">
+                                <i class="fas fa-user me-2"></i>Ім'я
+                            </label>
+                            <input type="text" class="form-control museum-input" id="first_name" name="first_name" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="position" class="form-label">
+                                <i class="fas fa-briefcase me-2"></i>Посада
+                            </label>
+                            <input type="text" class="form-control museum-input" id="position" name="position" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="salary" class="form-label">
+                                <i class="fas fa-money-bill me-2"></i>Зарплата
+                            </label>
+                            <input type="number" class="form-control museum-input" id="salary" name="salary" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="hire_date" class="form-label">
+                                <i class="fas fa-calendar me-2"></i>Дата найму
+                            </label>
+                            <input type="date" class="form-control museum-input" id="hire_date" name="hire_date" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>Email
+                            </label>
+                            <input type="email" class="form-control museum-input" id="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">
+                                <i class="fas fa-phone me-2"></i>Телефон
+                            </label>
+                            <input type="number" class="form-control museum-input" id="phone" name="phone" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="hall_id" class="form-label">
+                                <i class="fas fa-building me-2"></i>Зал (опціонально)
+                            </label>
+                            <input type="number" class="form-control museum-input" id="hall_id" name="hall_id">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="photo" class="form-label">
+                            <i class="fas fa-image me-2"></i>Фото (опціонально)
+                        </label>
+                        <input type="file" class="form-control museum-input" id="photo" name="photo">
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn museum-btn-primary">
+                            <i class="fas fa-save me-2"></i>Додати
+                        </button>
+                        <a href="employees.php" class="btn museum-btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Повернутися
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="first_name" class="form-label">Ім'я</label>
-            <input type="text" class="form-control" id="first_name" name="first_name" required>
-        </div>
-        <div class="mb-3">
-            <label for="position" class="form-label">Посада</label>
-            <input type="text" class="form-control" id="position" name="position" required>
-        </div>
-        <div class="mb-3">
-            <label for="salary" class="form-label">Зарплата</label>
-            <input type="number" class="form-control" id="salary" name="salary" required>
-        </div>
-        <div class="mb-3">
-            <label for="hire_date" class="form-label">Дата найму</label>
-            <input type="date" class="form-control" id="hire_date" name="hire_date" required>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-        </div>
-        <div class="mb-3">
-            <label for="phone" class="form-label">Телефон</label>
-            <input type="number" class="form-control" id="phone" name="phone" required>
-        </div>
-        <div class="mb-3">
-            <label for="hall_id" class="form-label">Зал (опціонально)</label>
-            <input type="number" class="form-control" id="hall_id" name="hall_id">
-        </div>
-        <div class="mb-3">
-            <label for="photo" class="form-label">Фото (опціонально)</label>
-            <input type="file" class="form-control" id="photo" name="photo">
-        </div>
-        <button type="submit" class="btn btn-success">Додати</button>
-    </form>
+    </div>
 </div>
 
 <?php include '../footer.php'; ?>

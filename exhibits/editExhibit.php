@@ -75,48 +75,105 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Редагувати експонат</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/museum-theme.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="museum-bg">
 <?php include '../header.php'; ?>
 
-<div class="container mt-5">
-    <h3>Редагувати експонат</h3>
-    <form method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="id" value="<?php echo $id; ?>">
-        <div class="mb-3">
-            <label for="name" class="form-label">Назва</label>
-            <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($exhibit['name']); ?>" required>
+<div class="museum-content">
+    <div class="container mt-5">
+        <div class="museum-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fas fa-edit museum-icon me-3" style="font-size: 2rem; color: var(--museum-accent);"></i>
+                    <h3 class="museum-title mb-0">Редагувати експонат</h3>
+                </div>
+
+                <div class="museum-card">
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="id" value="<?php echo $id; ?>">
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label fw-bold">
+                                            <i class="fas fa-gem me-2"></i>Назва
+                                        </label>
+                                        <input type="text" class="form-control museum-input" id="name" name="name" value="<?php echo htmlspecialchars($exhibit['name']); ?>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="year_created" class="form-label fw-bold">
+                                            <i class="fas fa-calendar me-2"></i>Рік створення
+                                        </label>
+                                        <input type="number" class="form-control museum-input" id="year_created" name="year_created" min="-9999" max="2025" value="<?php echo htmlspecialchars($exhibit['year_created']); ?>" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label fw-bold">
+                                    <i class="fas fa-align-left me-2"></i>Опис
+                                </label>
+                                <textarea class="form-control museum-input" id="description" name="description" rows="4" required><?php echo htmlspecialchars($exhibit['description']); ?></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="condition_status" class="form-label fw-bold">
+                                            <i class="fas fa-heart me-2"></i>Стан
+                                        </label>
+                                        <select class="form-select museum-input" id="condition_status" name="condition_status" required>
+                                            <option value="good" <?php echo $exhibit['condition_status'] === 'good' ? 'selected' : ''; ?>>Відмінний</option>
+                                            <option value="medium" <?php echo $exhibit['condition_status'] === 'medium' ? 'selected' : ''; ?>>Середній</option>
+                                            <option value="bad" <?php echo $exhibit['condition_status'] === 'bad' ? 'selected' : ''; ?>>Потребує реставрації</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="hall_id" class="form-label fw-bold">
+                                            <i class="fas fa-building me-2"></i>Зал (опціонально)
+                                        </label>
+                                        <input type="number" class="form-control museum-input" id="hall_id" name="hall_id" value="<?php echo htmlspecialchars($exhibit['hall_id']); ?>">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="last_restoration" class="form-label fw-bold">
+                                            <i class="fas fa-tools me-2"></i>Дата останньої реставрації (опціонально)
+                                        </label>
+                                        <input type="date" class="form-control museum-input" id="last_restoration" name="last_restoration" value="<?php echo htmlspecialchars($exhibit['last_restoration']); ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="photo" class="form-label fw-bold">
+                                            <i class="fas fa-image me-2"></i>Фото (опціонально)
+                                        </label>
+                                        <input type="file" class="form-control museum-input" id="photo" name="photo">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn museum-btn-secondary btn-lg">
+                                    <i class="fas fa-save me-2"></i>Оновити
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="description" class="form-label">Опис</label>
-            <textarea class="form-control" id="description" name="description" required><?php echo htmlspecialchars($exhibit['description']); ?></textarea>
-        </div>
-        <div class="mb-3">
-            <label for="year_created" class="form-label">Рік створення</label>
-            <input type="number" class="form-control" id="year_created" name="year_created" min="-9999" max="2025" value="<?php echo htmlspecialchars($exhibit['year_created']); ?>" required>
-        </div>
-        <div class="mb-3">
-            <label for="condition_status" class="form-label">Стан</label>
-            <select class="form-select" id="condition_status" name="condition_status" required>
-                <option value="good" <?php echo $exhibit['condition_status'] === 'good' ? 'selected' : ''; ?>>Good</option>
-                <option value="medium" <?php echo $exhibit['condition_status'] === 'medium' ? 'selected' : ''; ?>>Medium</option>
-                <option value="bad" <?php echo $exhibit['condition_status'] === 'bad' ? 'selected' : ''; ?>>Bad</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="hall_id" class="form-label">Зал (опціонально)</label>
-            <input type="number" class="form-control" id="hall_id" name="hall_id" value="<?php echo htmlspecialchars($exhibit['hall_id']); ?>">
-        </div>
-        <div class="mb-3">
-            <label for="last_restoration" class="form-label">Дата останньої реставрації (опціонально)</label>
-            <input type="date" class="form-control" id="last_restoration" name="last_restoration" value="<?php echo htmlspecialchars($exhibit['last_restoration']); ?>">
-        </div>
-        <div class="mb-3">
-            <label for="photo" class="form-label">Фото (опціонально)</label>
-            <input type="file" class="form-control" id="photo" name="photo">
-        </div>
-        <button type="submit" class="btn btn-warning">Оновити</button>
-    </form>
+    </div>
 </div>
 
 <?php include '../footer.php'; ?>

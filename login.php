@@ -7,7 +7,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     include 'connectionString.php';
 
-    // Перевірка користувача
     $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -44,7 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Вхід - Краєзнавчий музей</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вхід - Краєзнавчий музей</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/museum-theme.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
@@ -52,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
+    
 <?php include 'header.php'; ?>
 
 <div class="auth-container">
@@ -63,8 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="auth-icon">
                             <i class="fas fa-sign-in-alt"></i>
                         </div>
-                        <h2 class="auth-title">Вхід до системи</h2>
-                        <p class="auth-subtitle">Введіть свої облікові дані для доступу</p>
+                        <h2 class="auth-title">Вхід до музею</h2>
+                        <p class="auth-subtitle">Увійдіть до свого акаунта, щоб отримати доступ до всіх можливостей</p>
                     </div>
                     
                     <form method="POST" action="" class="auth-form">
@@ -91,9 +92,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     <div class="auth-footer">
                         <p class="text-center">
-                            Ще не маєте акаунту? 
-                            <a href="register.php" class="auth-link">Зареєструйтесь</a>
+                            Ще не маєте акаунта? 
+                            <a href="register.php" class="auth-link">Зареєструватися</a>
                         </p>
+                        <div class="text-center">
+                            <a href="index.php" class="back-link">
+                                <i class="fas fa-arrow-left me-1"></i>Повернутися на головну
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

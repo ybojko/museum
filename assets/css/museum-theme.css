@@ -1,4 +1,3 @@
-/* Museum Theme CSS */
 :root {
     --museum-primary: #8B4513;
     --museum-secondary: #D2691E;
@@ -12,7 +11,6 @@
     --shadow-heavy: 0 10px 30px rgba(139, 69, 19, 0.3);
 }
 
-/* Body and Global Styles */
 body {
     background: linear-gradient(to bottom, #F5F5DC 0%, #FAEBD7 100%);
     min-height: 100vh;
@@ -33,26 +31,50 @@ body::before {
     z-index: -1;
 }
 
-/* Navigation Styles */
 .navbar {
     background: var(--museum-gradient) !important;
     box-shadow: var(--shadow-medium);
     border-bottom: 3px solid var(--museum-gold);
     padding: 15px 0;
+    position: relative;
+    z-index: 1000;
 }
 
-.navbar-brand {
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-brand {
     font-size: 1.8rem;
     font-weight: bold;
     color: white !important;
+    text-decoration: none;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     position: relative;
+    font-family: 'Playfair Display', serif;
 }
 
-.navbar-brand::before {
+.nav-brand::before {
     content: '🏛️';
     margin-right: 10px;
     font-size: 1.5rem;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.nav-item {
+    margin: 0 5px;
 }
 
 .nav-link {
@@ -61,9 +83,10 @@ body::before {
     transition: all 0.3s ease;
     padding: 8px 16px !important;
     border-radius: 25px;
-    margin: 0 5px;
     position: relative;
     overflow: hidden;
+    text-decoration: none;
+    display: block;
 }
 
 .nav-link::before {
@@ -81,6 +104,8 @@ body::before {
     background: rgba(255,255,255,0.2);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    text-decoration: none;
+    color: white !important;
 }
 
 .nav-link:hover::before {
@@ -93,7 +118,77 @@ body::before {
     font-weight: bold;
 }
 
-/* Card Styles */
+.mobile-menu-toggle {
+    display: none;
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.mobile-menu-toggle:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Mobile Navigation */
+@media (max-width: 768px) {
+    .nav-menu {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 80%;
+        height: 100vh;
+        background: var(--museum-gradient);
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        padding: 80px 0 20px;
+        transition: left 0.3s ease;
+        z-index: 999;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+    }
+    
+    .nav-menu.active {
+        left: 0;
+    }
+    
+    .nav-item {
+        margin: 5px 0;
+        width: 100%;
+    }
+    
+    .nav-link {
+        padding: 15px 30px !important;
+        border-radius: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .mobile-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 998;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
 .museum-card {
     background: white;
     border-radius: 15px;
@@ -119,7 +214,6 @@ body::before {
     box-shadow: var(--shadow-heavy);
 }
 
-/* Form Styles */
 .museum-form {
     background: white;
     padding: 40px;
@@ -174,7 +268,6 @@ body::before {
     box-shadow: 0 0 0 0.2rem rgba(210, 105, 30, 0.25);
 }
 
-/* Button Styles */
 .btn-museum {
     background: var(--museum-gradient);
     border: none;
@@ -224,7 +317,6 @@ body::before {
     box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
 }
 
-/* Alert Styles */
 .alert {
     border-radius: 15px;
     border: none;
@@ -270,12 +362,10 @@ body::before {
     background: #ffc107;
 }
 
-/* Container Enhancements */
 .container {
     position: relative;
 }
 
-/* Page Titles */
 .page-title {
     text-align: center;
     color: var(--museum-dark);
@@ -331,7 +421,6 @@ body::before {
     margin-bottom: 30px;
 }
 
-/* Decorative Elements */
 .museum-icon {
     font-size: 4rem;
     color: var(--museum-gold);
@@ -339,7 +428,6 @@ body::before {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Hero Section Styles */
 .hero-section {
     background: linear-gradient(135deg, var(--museum-light) 0%, #FAEBD7 50%, #F0E68C 100%);
     padding: 80px 0;
@@ -424,7 +512,6 @@ body::before {
     line-height: 1.5;
 }
 
-/* Feature Cards */
 .feature-card {
     background: white;
     padding: 2.5rem 2rem;
@@ -472,7 +559,6 @@ body::before {
     margin-bottom: 1.5rem;
 }
 
-/* Authentication Styles */
 .auth-container {
     min-height: calc(100vh - 200px);
     display: flex;
@@ -591,7 +677,20 @@ body::before {
     text-decoration: underline;
 }
 
-/* Museum Button Variants */
+.back-link {
+    color: var(--museum-accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    color: var(--museum-primary);
+    text-decoration: none;
+}
+
 .btn-museum-primary {
     background: var(--museum-gradient);
     border: none;
@@ -626,14 +725,52 @@ body::before {
     box-shadow: var(--shadow-light);
 }
 
-/* Museum Brand Styling */
+.btn-museum-secondary {
+    background: var(--museum-secondary);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-light);
+}
+
+.btn-museum-secondary:hover {
+    background: var(--museum-accent);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.btn-museum-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-light);
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.btn-museum-danger:hover {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+    text-decoration: none;
+}
+
 .museum-brand {
     font-family: 'Playfair Display', serif !important;
     font-weight: 700 !important;
     font-size: 1.8rem !important;
 }
 
-/* Dropdown Menu Styling */
 .dropdown-menu {
     border: none;
     box-shadow: var(--shadow-medium);
@@ -659,7 +796,6 @@ body::before {
     width: 20px;
 }
 
-/* User Menu Styling */
 .user-menu {
     background: rgba(255, 255, 255, 0.1) !important;
     border-radius: 8px !important;
@@ -667,7 +803,6 @@ body::before {
     margin-left: 0.5rem !important;
 }
 
-/* Enhanced Alert Styling */
 .alert-with-icon {
     display: flex;
     align-items: center;
@@ -700,7 +835,218 @@ body::before {
     border-left: 5px solid #ffc107;
 }
 
-/* Animation Classes */
+/* Badge Styles */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-info {
+    color: #fff;
+    background-color: var(--museum-accent);
+}
+
+.badge-warning {
+    color: #fff;
+    background-color: var(--museum-secondary);
+}
+
+.badge-secondary {
+    color: #fff;
+    background-color: #6c757d;
+}
+
+.badge-success {
+    color: #fff;
+    background-color: #28a745;
+}
+
+.badge-danger {
+    color: #fff;
+    background-color: #dc3545;
+}
+
+.museum-badge {
+    display: inline-block;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.375rem;
+    background-color: var(--museum-light);
+    color: var(--museum-dark);
+    border: 1px solid var(--museum-accent);
+}
+
+/* Review Text */
+.review-text {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Table Responsive */
+.table-responsive {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
+    color: var(--museum-dark);
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+    background-color: var(--museum-light);
+    font-weight: 600;
+    color: var(--museum-dark);
+}
+
+.table tbody tr:hover {
+    background-color: rgba(139, 69, 19, 0.05);
+}
+
+/* Button Small */
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.375rem;
+}
+
+/* D-flex utilities */
+.d-flex {
+    display: flex !important;
+}
+
+.justify-content-between {
+    justify-content: space-between !important;
+}
+
+.align-items-center {
+    align-items: center !important;
+}
+
+/* Profile and Info Card styles */
+.info-card {
+    background: linear-gradient(135deg, var(--museum-light), #fff);
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.1);
+}
+
+.info-icon {
+    background: var(--museum-accent);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.25rem;
+}
+
+.info-content h6 {
+    color: var(--museum-dark);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-content p {
+    color: var(--museum-primary);
+    font-weight: 500;
+    margin-bottom: 0;
+    font-size: 1.1rem;
+}
+
+/* Text utilities */
+.text-center {
+    text-align: center !important;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.text-museum-primary {
+    color: var(--museum-primary) !important;
+}
+
+/* Margin and padding utilities */
+.mb-2 {
+    margin-bottom: 0.5rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+.mt-2 {
+    margin-top: 0.5rem !important;
+}
+
+.mt-4 {
+    margin-top: 1.5rem !important;
+}
+
+.py-4 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+}
+
+.py-5 {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+}
+
 .fade-in {
     animation: fadeIn 0.8s ease-in;
 }
@@ -719,7 +1065,6 @@ body::before {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .navbar-brand {
         font-size: 1.4rem;
@@ -761,4 +1106,220 @@ body::before {
     .showcase-item {
         padding: 1.5rem;
     }
+}
+
+/* Search Form Styles */
+.search-form {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+}
+
+.search-row {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+.search-col {
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-col:last-child {
+    flex: 0 0 auto;
+}
+
+.search-col .form-control,
+.search-col .form-select {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .search-row {
+        flex-direction: column;
+    }
+    
+    .search-col {
+        width: 100%;
+        min-width: unset;
+    }
+    
+    .search-col:last-child {
+        flex: 1;
+    }
+}
+
+/* Exhibit Photo Styles */
+.exhibit-photo {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--museum-light);
+    transition: all 0.3s ease;
+}
+
+.exhibit-photo:hover {
+    transform: scale(1.1);
+    border-color: var(--museum-accent);
+}
+
+.exhibit-photo-placeholder {
+    width: 50px;
+    height: 50px;
+    background: var(--museum-light);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    border: 2px solid #e0e0e0;
+}
+
+/* Form Group Styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--museum-dark);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.form-group .form-control,
+.form-group .form-select {
+    width: 100%;
+}
+
+/* Employee-specific styles */
+.employee-photo {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--museum-light);
+    transition: all 0.3s ease;
+}
+
+.employee-photo:hover {
+    transform: scale(1.1);
+    border-color: var(--museum-accent);
+}
+
+.employee-photo-placeholder {
+    width: 50px;
+    height: 50px;
+    background: var(--museum-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    border: 2px solid #e0e0e0;
+}
+
+/* Container Styles */
+.museum-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Header Styles */
+.museum-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.museum-header .museum-title {
+    margin: 0;
+    color: var(--museum-dark);
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Actions Styles */
+.museum-actions {
+    margin-bottom: 2rem;
+}
+
+.museum-actions-inline {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* Text Utility Classes */
+.text-museum-success {
+    color: #28a745;
+}
+
+.text-museum-primary {
+    color: var(--museum-primary);
+}
+
+.museum-text-bold {
+    font-weight: 700;
+}
+
+.museum-link {
+    color: var(--museum-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.museum-link:hover {
+    color: var(--museum-secondary);
+    text-decoration: underline;
+}
+
+/* Empty State Styles */
+.museum-empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.museum-empty-content {
+    color: #6c757d;
+}
+
+.museum-empty-content i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.museum-empty-content h5 {
+    margin-bottom: 0.5rem;
+    color: var(--museum-dark);
+}
+
+.museum-empty-content p {
+    margin: 0;
+    opacity: 0.8;
+}
+
+/* Button small size variant */
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.375rem;
+}
+
+/* Table Container Styles */
+.museum-table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+    border: 1px solid rgba(139, 69, 19, 0.1);
 }
