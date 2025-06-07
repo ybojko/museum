@@ -1,5 +1,9 @@
 <?php
 include '../connectionString.php';
+include '../log_functions.php';
+
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: visitors.php');
@@ -15,11 +19,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Валідація
     if (empty($last_name) || empty($first_name) || empty($email) || ctype_space($last_name) || ctype_space($first_name) || ctype_space($email)) {
         echo "<script>alert('Будь ласка, заповніть усі поля коректно.');</script>";
-    } else {
-        // Додавання нового відвідувача
+    } else {        // Додавання нового відвідувача
         $stmt = $conn->prepare("INSERT INTO visitors (last_name, first_name, email, visitor_type) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("ssss", $last_name, $first_name, $email, $visitor_type);
         if ($stmt->execute()) {
+            $new_visitor_id = $conn->insert_id;
+            
+            // Логування додавання
+            $action_details = "Додано нового відвідувача: $last_name $first_name\nEmail: $email\nТип: $visitor_type";
+            logActivity($conn, 'INSERT', 'visitors', $new_visitor_id, $action_details);
+            
             echo "<script>alert('Відвідувача успішно додано!'); window.location.href = 'visitors.php';</script>";
         } else {
             echo "<script>alert('Помилка при додаванні відвідувача.');</script>";

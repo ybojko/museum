@@ -1,7 +1,11 @@
 <?php
 include '../connectionString.php'; 
+include '../log_functions.php';
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
+
+if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'visitor_manager')) {
     header('Location: ../index.php');
     exit;
 }

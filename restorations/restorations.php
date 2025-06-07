@@ -1,14 +1,38 @@
 <?php
 include '../connectionString.php';
+include '../log_functions.php';
+
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
 
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'guest';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role === 'admin') {
     $delete_id = $_POST['delete_id'];
 
+    // Отримуємо інформацію про реставрацію перед видаленням для логування
+    $info_stmt = $conn->prepare("SELECT exhibit_id, restoration_date, employee_id, description FROM restorations WHERE id = ?");
+    $info_stmt->bind_param("i", $delete_id);
+    $info_stmt->execute();
+    $info_result = $info_stmt->get_result();
+    $restoration_info = $info_result->fetch_assoc();
+    $info_stmt->close();
+
     $delete_stmt = $conn->prepare("DELETE FROM restorations WHERE id = ?");
     $delete_stmt->bind_param("i", $delete_id);
     if ($delete_stmt->execute()) {
+        // Логування видалення
+        if ($restoration_info) {
+            $action_details = "Видалено реставрацію\nЕкспонат ID: {$restoration_info['exhibit_id']}\nДата реставрації: {$restoration_info['restoration_date']}";
+            if (!empty($restoration_info['employee_id'])) {
+                $action_details .= "\nСпівробітник ID: {$restoration_info['employee_id']}";
+            }
+            if (!empty($restoration_info['description'])) {
+                $action_details .= "\nОпис: {$restoration_info['description']}";
+            }
+            logActivity($conn, 'DELETE', 'restorations', $delete_id, $action_details);
+        }
+        
         echo "<script>alert('Реставрацію успішно видалено!'); window.location.href = 'restorations.php';</script>";
     } else {
         echo "<script>alert('Помилка при видаленні реставрації.');</script>";

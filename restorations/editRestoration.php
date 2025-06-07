@@ -1,5 +1,9 @@
 <?php
 include '../connectionString.php';
+include '../log_functions.php';
+
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: restorations.php');
@@ -21,10 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['exhibit_id'])) {
 
     if (empty($exhibit_id) || empty($restoration_date)) {
         echo "<script>alert('ID експоната та дата реставрації є обов'язковими!');</script>";
-    } else {
-        $stmt = $conn->prepare("UPDATE restorations SET exhibit_id = ?, restoration_date = ?, employee_id = ?, description = ? WHERE id = ?");
+    } else {        $stmt = $conn->prepare("UPDATE restorations SET exhibit_id = ?, restoration_date = ?, employee_id = ?, description = ? WHERE id = ?");
         $stmt->bind_param("isisi", $exhibit_id, $restoration_date, $employee_id, $description, $id);
         if ($stmt->execute()) {
+            // Логування оновлення
+            $action_details = "Оновлено реставрацію (ID: $id)\nЕкспонат ID: $exhibit_id\nДата реставрації: $restoration_date";
+            if (!empty($employee_id)) {
+                $action_details .= "\nСпівробітник ID: $employee_id";
+            }
+            if (!empty($description)) {
+                $action_details .= "\nОпис: $description";
+            }
+            logActivity($conn, 'UPDATE', 'restorations', $id, $action_details);
+            
             echo "<script>alert('Реставрацію успішно оновлено!'); window.location.href = 'restorations.php';</script>";
         } else {
             echo "<script>alert('Помилка при оновленні реставрації.');</script>";

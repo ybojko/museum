@@ -1,7 +1,11 @@
 <?php
 include '../connectionString.php';
+include '../log_functions.php';
 
-if ($_SESSION['role'] !== 'admin') {
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
+
+if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'content_manager') {
     header('Location: exhibits.php');
     exit;
 }
@@ -40,9 +44,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
         } else {
             $stmt = $conn->prepare("UPDATE exhibits SET name = ?, description = ?, year_created = ?, condition_status = ?, hall_id = ?, last_restoration = ? WHERE id = ?");
             $stmt->bind_param("ssisssi", $name, $description, $year_created, $condition_status, $hall_id, $last_restoration, $id);
-        }
-
-        if ($stmt->execute()) {
+        }        if ($stmt->execute()) {
+            // Логування оновлення
+            $action_details = "Оновлено експонат: $name (ID: $id)\nОпис: $description\nРік створення: $year_created\nСтан: $condition_status";
+            if (!empty($hall_id)) {
+                $action_details .= "\nЗал ID: $hall_id";
+            }
+            logActivity($conn, 'UPDATE', 'exhibits', $id, $action_details);
+            
             echo "<script>alert('Експонат успішно оновлено!'); window.location.href = 'exhibits.php';</script>";
         } else {
             echo "<script>alert('Помилка при оновленні експонату.');</script>";

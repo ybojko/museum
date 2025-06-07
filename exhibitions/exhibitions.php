@@ -1,14 +1,33 @@
 <?php
 include '../connectionString.php';
+include '../log_functions.php';
+
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
 
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'guest';
+$can_manage_content = ($role === 'admin' || $role === 'content_manager');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role === 'admin') {
     $delete_id = $_POST['delete_id'];
 
+    // Отримуємо інформацію про виставку перед видаленням для логування
+    $info_stmt = $conn->prepare("SELECT title, start_date, end_date FROM exhibitions WHERE id = ?");
+    $info_stmt->bind_param("i", $delete_id);
+    $info_stmt->execute();
+    $info_result = $info_stmt->get_result();
+    $exhibition_info = $info_result->fetch_assoc();
+    $info_stmt->close();
+
     $delete_stmt = $conn->prepare("DELETE FROM exhibitions WHERE id = ?");
     $delete_stmt->bind_param("i", $delete_id);
     if ($delete_stmt->execute()) {
+        // Логування видалення
+        if ($exhibition_info) {
+            $action_details = "Видалено виставку: {$exhibition_info['title']}\nПочаток: {$exhibition_info['start_date']}\nЗавершення: {$exhibition_info['end_date']}";
+            logActivity($conn, 'DELETE', 'exhibitions', $delete_id, $action_details);
+        }
+        
         echo "<script>alert('Виставку успішно видалено!'); window.location.href = 'exhibitions.php';</script>";
     } else {
         echo "<script>alert('Помилка при видаленні виставки.');</script>";
@@ -67,7 +86,7 @@ $result = $stmt->get_result();
                     <h3 class="museum-title mb-0">Виставки музею</h3>
                 </div>
 
-                <?php if ($role === 'admin'): ?>
+                <?php if ($can_manage_content): ?>
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <a href="addExhibition.php" class="btn museum-btn-primary">
@@ -106,7 +125,7 @@ $result = $stmt->get_result();
                                 <th><i class="fas fa-calendar-times me-2"></i>Дата завершення</th>
                                 <th><i class="fas fa-align-left me-2"></i>Опис</th>
                                 <th><i class="fas fa-building me-2"></i>Зал</th>
-                                <?php if ($role === 'admin'): ?>
+                                <?php if ($can_manage_content): ?>
                                     <th><i class="fas fa-cogs me-2"></i>Дії</th>
                                 <?php endif; ?>
                             </tr>
@@ -144,7 +163,7 @@ $result = $stmt->get_result();
                                                 <?php echo htmlspecialchars($row['hall_name']); ?>
                                             </span>
                                         </td>
-                                        <?php if ($role === 'admin'): ?>
+                                        <?php if ($can_manage_content): ?>
                                             <td>
                                                 <div class="d-flex gap-2">
                                                     <form method="POST" action="editExhibition.php" style="display: inline;">
@@ -153,11 +172,13 @@ $result = $stmt->get_result();
                                                             <i class="fas fa-edit"></i>
                                                         </button>
                                                     </form>                                
+                                                    <?php if ($role === 'admin'): ?>
                                                     <button class="btn btn-sm museum-btn-danger" 
                                                             onclick="confirmDelete('<?php echo htmlspecialchars($row['title']); ?>', <?php echo $row['id']; ?>)"
                                                             title="Видалити">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
+                                                    <?php endif; ?>
                                                 </div>
                                             </td>
                                         <?php endif; ?>
@@ -165,7 +186,7 @@ $result = $stmt->get_result();
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="<?php echo $role === 'admin' ? 7 : 6; ?>" class="text-center py-5">
+                                    <td colspan="<?php echo $can_manage_content ? 7 : 6; ?>" class="text-center py-5">
                                         <div class="text-muted">
                                             <i class="fas fa-palette fa-3x mb-3"></i>
                                             <h5>Виставки не знайдено</h5>

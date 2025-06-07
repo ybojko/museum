@@ -1,16 +1,21 @@
 <?php
 include '../connectionString.php';
+include '../log_functions.php';
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
+
+if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'staff_manager')) {
     header('Location: /museum/index.php');
     exit;
 }
 
+$role = $_SESSION['role'];
 
 // Отримання параметрів пошуку
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Формування SQL-запиту
+// Формування SQL-запиту для офлайн робітників
 $sql = "SELECT * FROM employees WHERE 1=1";
 $params = [];
 $types = "";
@@ -23,7 +28,7 @@ if (!empty($search)) {
     $types = str_repeat("s", 6);
 }
 
-// Підготовка запиту
+// Підготовка запиту для офлайн робітників
 $stmt = $conn->prepare($sql);
 if (!empty($params)) {
     $stmt->bind_param($types, ...$params);
@@ -31,13 +36,46 @@ if (!empty($params)) {
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Видалення запису
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+// SQL-запит для онлайн робітників (користувачі з ролями, відмінними від 'user')
+$sql_staff = "SELECT id, username, email, created_at, role FROM users WHERE role != 'user'";
+$params_staff = [];
+$types_staff = "";
+
+if (!empty($search)) {
+    $sql_staff .= " AND (username LIKE ? OR email LIKE ? OR role LIKE ?)";
+    $search_param = "%$search%";
+    $params_staff = array_fill(0, 3, $search_param);
+    $types_staff = str_repeat("s", 3);
+}
+
+$stmt_staff = $conn->prepare($sql_staff);
+if (!empty($params_staff)) {
+    $stmt_staff->bind_param($types_staff, ...$params_staff);
+}
+$stmt_staff->execute();
+$result_staff = $stmt_staff->get_result();
+
+// Видалення запису (тільки для адміна)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role === 'admin') {
     $delete_id = $_POST['delete_id'];
+
+    // Отримуємо інформацію про співробітника перед видаленням для логування
+    $info_stmt = $conn->prepare("SELECT last_name, first_name, position FROM employees WHERE id = ?");
+    $info_stmt->bind_param("i", $delete_id);
+    $info_stmt->execute();
+    $info_result = $info_stmt->get_result();
+    $employee_info = $info_result->fetch_assoc();
+    $info_stmt->close();
 
     $delete_stmt = $conn->prepare("DELETE FROM employees WHERE id = ?");
     $delete_stmt->bind_param("i", $delete_id);
     if ($delete_stmt->execute()) {
+        // Логування видалення
+        if ($employee_info) {
+            $action_details = "Видалено співробітника: {$employee_info['last_name']} {$employee_info['first_name']}\nПосада: {$employee_info['position']}";
+            logActivity($conn, 'DELETE', 'employees', $delete_id, $action_details);
+        }
+        
         echo "<script>alert('Запис успішно видалено!'); window.location.href = 'employees.php';</script>";
     } else {
         echo "<script>alert('Помилка при видаленні запису.');</script>";
@@ -76,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                     <h3 class="museum-title mb-0">Робітники музею</h3>
                 </div>
 
+                <?php if ($role === 'admin'): ?>
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <a href="addEmployee.php" class="btn museum-btn-primary">
@@ -83,6 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                         </a>
                     </div>
                 </div>
+                <?php endif; ?>
 
                 <div class="museum-card mb-4">
                     <div class="card-body">
@@ -102,94 +142,162 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                             </div>
                         </form>
                     </div>
-                </div>              
-                <div class="table-responsive">
-                    <table class="table museum-table">
-                        <thead>
-                            <tr>
-                                <th><i class="fas fa-hashtag me-2"></i>ID</th>
-                                <th><i class="fas fa-user me-2"></i>Прізвище</th>
-                                <th><i class="fas fa-user me-2"></i>Ім'я</th>
-                                <th><i class="fas fa-briefcase me-2"></i>Посада</th>
-                                <th><i class="fas fa-money-bill me-2"></i>Зарплата</th>
-                                <th><i class="fas fa-calendar me-2"></i>Дата найму</th>
-                                <th><i class="fas fa-envelope me-2"></i>Email</th>
-                                <th><i class="fas fa-phone me-2"></i>Телефон</th>
-                                <th><i class="fas fa-building me-2"></i>Зал</th>
-                                <th><i class="fas fa-image me-2"></i>Фото</th>
-                                <th><i class="fas fa-cogs me-2"></i>Дії</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if ($result->num_rows > 0): ?>
-                                <?php while ($row = $result->fetch_assoc()): ?>
+                </div>
+
+                <div class="museum-card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-store me-2"></i>Офлайн-робітники
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table museum-table">
+                                <thead>
                                     <tr>
-                                        <td><?php echo htmlspecialchars($row['id']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['last_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['first_name']); ?></td>
-                                        <td>
-                                            <span class="badge museum-badge">
-                                                <?php echo htmlspecialchars($row['position']); ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="text-success fw-bold">
-                                                <?php echo number_format($row['salary'], 0, ',', ' '); ?> грн
-                                            </span>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($row['hire_date']); ?></td>
-                                        <td>
-                                            <a href="mailto:<?php echo htmlspecialchars($row['email']); ?>" class="text-decoration-none">
-                                                <?php echo htmlspecialchars($row['email']); ?>
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <a href="tel:<?php echo htmlspecialchars($row['phone']); ?>" class="text-decoration-none">
-                                                <?php echo htmlspecialchars($row['phone']); ?>
-                                            </a>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($row['hall_id']); ?></td>
-                                        <td>
-                                            <?php if (!empty($row['photo'])): ?>
-                                                <img src="/museum/employees_uploads/<?php echo htmlspecialchars($row['photo']); ?>" 
-                                                     alt="Фото" class="rounded-circle" width="50" height="50" style="object-fit: cover;">
-                                            <?php else: ?>
-                                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" 
-                                                     style="width: 50px; height: 50px;">
-                                                    <i class="fas fa-user text-muted"></i>
-                                                </div>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex gap-2">
-                                                <form method="POST" action="editEmployee.php" style="display: inline;">
-                                                    <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                                                    <button type="submit" class="btn btn-sm museum-btn-secondary" title="Редагувати">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                </form>
-                                                <button class="btn btn-sm museum-btn-danger" 
-                                                        onclick="confirmDelete('<?php echo htmlspecialchars($row['last_name'] . ' ' . $row['first_name']); ?>', <?php echo $row['id']; ?>)"
-                                                        title="Видалити">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+                                        <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                                        <th><i class="fas fa-user me-2"></i>Прізвище</th>
+                                        <th><i class="fas fa-user me-2"></i>Ім'я</th>
+                                        <th><i class="fas fa-briefcase me-2"></i>Посада</th>
+                                        <th><i class="fas fa-money-bill me-2"></i>Зарплата</th>
+                                        <th><i class="fas fa-calendar me-2"></i>Дата найму</th>
+                                        <th><i class="fas fa-envelope me-2"></i>Email</th>
+                                        <th><i class="fas fa-phone me-2"></i>Телефон</th>
+                                        <th><i class="fas fa-building me-2"></i>Зал</th>
+                                        <th><i class="fas fa-image me-2"></i>Фото</th>
+                                        <?php if ($role === 'admin'): ?>
+                                            <th><i class="fas fa-cogs me-2"></i>Дії</th>
+                                        <?php endif; ?>
                                     </tr>
-                                <?php endwhile; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="11" class="text-center py-5">
-                                        <div class="text-muted">
-                                            <i class="fas fa-search fa-3x mb-3"></i>
-                                            <h5>Нічого не знайдено</h5>
-                                            <p>Спробуйте змінити параметри пошуку</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                                </thead>
+                                <tbody>
+                                    <?php if ($result->num_rows > 0): ?>
+                                        <?php while ($row = $result->fetch_assoc()): ?>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($row['id']); ?></td>
+                                                <td><?php echo htmlspecialchars($row['last_name']); ?></td>
+                                                <td><?php echo htmlspecialchars($row['first_name']); ?></td>
+                                                <td>
+                                                    <span class="badge museum-badge">
+                                                        <?php echo htmlspecialchars($row['position']); ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="text-success fw-bold">
+                                                        <?php echo number_format($row['salary'], 0, ',', ' '); ?> грн
+                                                    </span>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($row['hire_date']); ?></td>
+                                                <td>
+                                                    <a href="mailto:<?php echo htmlspecialchars($row['email']); ?>" class="text-decoration-none">
+                                                        <?php echo htmlspecialchars($row['email']); ?>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a href="tel:<?php echo htmlspecialchars($row['phone']); ?>" class="text-decoration-none">
+                                                        <?php echo htmlspecialchars($row['phone']); ?>
+                                                    </a>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($row['hall_id']); ?></td>
+                                                <td>
+                                                    <?php if (!empty($row['photo'])): ?>
+                                                        <img src="/museum/employees_uploads/<?php echo htmlspecialchars($row['photo']); ?>" 
+                                                             alt="Фото" class="rounded-circle" width="50" height="50" style="object-fit: cover;">
+                                                    <?php else: ?>
+                                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" 
+                                                             style="width: 50px; height: 50px;">
+                                                            <i class="fas fa-user text-muted"></i>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <?php if ($role === 'admin'): ?>
+                                                    <td>
+                                                        <div class="d-flex gap-2">
+                                                            <form method="POST" action="editEmployee.php" style="display: inline;">
+                                                                <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                                                <button type="submit" class="btn btn-sm museum-btn-secondary" title="Редагувати">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </button>
+                                                            </form>
+                                                            <button class="btn btn-sm museum-btn-danger" 
+                                                                    onclick="confirmDelete('<?php echo htmlspecialchars($row['last_name'] . ' ' . $row['first_name']); ?>', <?php echo $row['id']; ?>)"
+                                                                    title="Видалити">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                <?php else: ?>
+                                                    <td>
+                                                        <span class="text-muted">Тільки перегляд</span>
+                                                    </td>
+                                                <?php endif; ?>
+                                            </tr>
+                                        <?php endwhile; ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="<?php echo $role === 'admin' ? 11 : 10; ?>" class="text-center py-5">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-search fa-3x mb-3"></i>
+                                                    <h5>Нічого не знайдено</h5>
+                                                    <p>Спробуйте змінити параметри пошуку</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="museum-card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-globe me-2"></i>Онлайн-робітники
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table museum-table">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                                        <th><i class="fas fa-user me-2"></i>Ім'я користувача</th>
+                                        <th><i class="fas fa-envelope me-2"></i>Email</th>
+                                        <th><i class="fas fa-calendar me-2"></i>Дата створення</th>
+                                        <th><i class="fas fa-shield-alt me-2"></i>Роль</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if ($result_staff->num_rows > 0): ?>
+                                        <?php while ($row = $result_staff->fetch_assoc()): ?>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($row['id']); ?></td>
+                                                <td><?php echo htmlspecialchars($row['username']); ?></td>
+                                                <td>
+                                                    <a href="mailto:<?php echo htmlspecialchars($row['email']); ?>" class="text-decoration-none">
+                                                        <?php echo htmlspecialchars($row['email']); ?>
+                                                    </a>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                                                <td>
+                                                    <span class="badge museum-badge">
+                                                        <?php echo htmlspecialchars($row['role']); ?>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        <?php endwhile; ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="5" class="text-center py-5">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-search fa-3x mb-3"></i>
+                                                    <h5>Нічого не знайдено</h5>
+                                                    <p>Спробуйте змінити параметри пошуку</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,10 +1,16 @@
 <?php
 include '../connectionString.php';
+include '../log_functions.php';
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
+
+if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'visitor_manager')) {
     header('Location: ../index.php');
     exit;
 }
+
+$role = $_SESSION['role'];
 
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $visitor_type_filter = isset($_GET['visitor_type']) && in_array($_GET['visitor_type'], ['default', 'benefitial']) ? $_GET['visitor_type'] : '';
@@ -80,6 +86,7 @@ $result_users = $stmt_users->get_result();
                     <h3 class="museum-title mb-0">Відвідувачі музею</h3>
                 </div>
 
+                <?php if ($role === 'admin'): ?>
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <a href="addVisitor.php" class="btn museum-btn-primary">
@@ -87,6 +94,7 @@ $result_users = $stmt_users->get_result();
                         </a>
                     </div>
                 </div>
+                <?php endif; ?>
 
                 <div class="museum-card mb-4">
                     <div class="card-body">
@@ -150,12 +158,16 @@ $result_users = $stmt_users->get_result();
                                                     </span>
                                                 </td>
                                                 <td>
+                                                    <?php if ($role === 'admin'): ?>
                                                     <form method="POST" action="editVisitor.php" style="display: inline;">
                                                         <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
                                                         <button type="submit" class="btn btn-sm museum-btn-secondary" title="Редагувати">
                                                             <i class="fas fa-edit"></i>
                                                         </button>
                                                     </form>
+                                                    <?php else: ?>
+                                                    <span class="text-muted">Тільки перегляд</span>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                         <?php endwhile; ?>

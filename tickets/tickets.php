@@ -9,7 +9,7 @@ if (!isset($_SESSION['role'])) {
 $role = $_SESSION['role'];
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
 
-if ($role === 'admin') {
+if ($role === 'admin' || $role === 'visitor_manager') {
     $sql = "SELECT * FROM ticket_details_view";
     $stmt = $conn->prepare($sql);
 } else {
@@ -88,7 +88,7 @@ $result = $stmt->get_result();
                                         <td><?php echo htmlspecialchars($row['description']); ?></td>
                                         <td><?php echo htmlspecialchars($row['hall_name']); ?></td>
                                         <td>
-                                            <?php if ($role !== 'admin' && $row['username'] === $username): ?>
+                                            <?php if ($role !== 'admin' && $role !== 'visitor_manager' && $row['username'] === $username): ?>
                                                 <form method="POST" action="../reviews/addReview.php" style="display: inline;">
                                                     <input type="hidden" name="exhibition_title" value="<?php echo htmlspecialchars($row['title']); ?>">
                                                     <button type="submit" class="btn btn-sm museum-btn-secondary" title="Написати відгук">

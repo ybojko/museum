@@ -1,16 +1,35 @@
 <?php
 include '../connectionString.php'; // Підключення до бази даних
+include '../log_functions.php';
+
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
 
 // Отримання ролі користувача
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'guest';
+$can_manage_content = ($role === 'admin' || $role === 'content_manager');
 
 // Видалення запису (тільки для адміна)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role === 'admin') {
     $delete_id = $_POST['delete_id'];
 
+    // Отримуємо інформацію про експонат перед видаленням для логування
+    $info_stmt = $conn->prepare("SELECT name, description, year_created FROM exhibits WHERE id = ?");
+    $info_stmt->bind_param("i", $delete_id);
+    $info_stmt->execute();
+    $info_result = $info_stmt->get_result();
+    $exhibit_info = $info_result->fetch_assoc();
+    $info_stmt->close();
+
     $delete_stmt = $conn->prepare("DELETE FROM exhibits WHERE id = ?");
     $delete_stmt->bind_param("i", $delete_id);
     if ($delete_stmt->execute()) {
+        // Логування видалення
+        if ($exhibit_info) {
+            $action_details = "Видалено експонат: {$exhibit_info['name']}\nОпис: {$exhibit_info['description']}\nРік створення: {$exhibit_info['year_created']}";
+            logActivity($conn, 'DELETE', 'exhibits', $delete_id, $action_details);
+        }
+        
         echo "<script>alert('Експонат успішно видалено!'); window.location.href = 'exhibits.php';</script>";
     } else {
         echo "<script>alert('Помилка при видаленні експоната.');</script>";
@@ -76,7 +95,7 @@ $result = $stmt->get_result();
                     <h3 class="museum-title mb-0">Експонати музею</h3>
                 </div>
 
-                <?php if ($role === 'admin'): ?>
+                <?php if ($can_manage_content): ?>
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <a href="addExhibit.php" class="btn museum-btn-primary">
@@ -125,7 +144,7 @@ $result = $stmt->get_result();
                                 <th><i class="fas fa-tools me-2"></i>Остання реставрація</th>
                                 <th><i class="fas fa-heart me-2"></i>Стан</th>
                                 <th><i class="fas fa-image me-2"></i>Фото</th>
-                                <?php if ($role === 'admin'): ?>
+                                <?php if ($can_manage_content): ?>
                                     <th><i class="fas fa-cogs me-2"></i>Дії</th>
                                 <?php endif; ?>
                             </tr>
@@ -207,7 +226,7 @@ $result = $stmt->get_result();
                                                 </div>
                                             <?php endif; ?>
                                         </td>
-                                        <?php if ($role === 'admin'): ?>
+                                        <?php if ($can_manage_content): ?>
                                             <td>
                                                 <div class="d-flex gap-2">
                                                     <form method="POST" action="editExhibit.php" style="display: inline;">
@@ -216,11 +235,13 @@ $result = $stmt->get_result();
                                                             <i class="fas fa-edit"></i>
                                                         </button>
                                                     </form>
+                                                    <?php if ($role === 'admin'): ?>
                                                     <button class="btn btn-sm museum-btn-danger" 
                                                             onclick="confirmDelete('<?php echo htmlspecialchars($row['name']); ?>', <?php echo $row['id']; ?>)"
                                                             title="Видалити">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
+                                                    <?php endif; ?>
                                                 </div>
                                             </td>
                                         <?php endif; ?>
@@ -228,7 +249,7 @@ $result = $stmt->get_result();
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="<?php echo $role === 'admin' ? 9 : 8; ?>" class="text-center py-5">
+                                    <td colspan="<?php echo $can_manage_content ? 9 : 8; ?>" class="text-center py-5">
                                         <div class="text-muted">
                                             <i class="fas fa-gem fa-3x mb-3"></i>
                                             <h5>Експонати не знайдено</h5>

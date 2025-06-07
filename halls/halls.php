@@ -1,5 +1,9 @@
 <?php
 include '../connectionString.php'; 
+include '../log_functions.php';
+
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
 
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $floor_filter = isset($_GET['floor']) ? trim($_GET['floor']) : '';
@@ -31,9 +35,26 @@ $result = $stmt->get_result();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $delete_id = $_POST['delete_id'];
 
+    // Отримуємо інформацію про зал перед видаленням для логування
+    $info_stmt = $conn->prepare("SELECT name, floor, description FROM halls WHERE id = ?");
+    $info_stmt->bind_param("i", $delete_id);
+    $info_stmt->execute();
+    $info_result = $info_stmt->get_result();
+    $hall_info = $info_result->fetch_assoc();
+    $info_stmt->close();
+
     $delete_stmt = $conn->prepare("DELETE FROM halls WHERE id = ?");
     $delete_stmt->bind_param("i", $delete_id);
     if ($delete_stmt->execute()) {
+        // Логування видалення
+        if ($hall_info) {
+            $action_details = "Видалено зал: {$hall_info['name']}\nПоверх: {$hall_info['floor']}";
+            if (!empty($hall_info['description'])) {
+                $action_details .= "\nОпис: {$hall_info['description']}";
+            }
+            logActivity($conn, 'DELETE', 'halls', $delete_id, $action_details);
+        }
+        
         echo "<script>alert('Запис успішно видалено!'); window.location.href = 'halls.php';</script>";
     } else {
         echo "<script>alert('Помилка при видаленні запису.');</script>";
@@ -64,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 <?php include '../header.php'; ?>
 <?php
     $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'guest';
+    $can_manage_content = ($role === 'admin' || $role === 'content_manager');
 ?>
 
 <div class="museum-content">
@@ -75,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                     <h3 class="museum-title mb-0">Зали музею</h3>
                 </div>
 
-                <?php if ($role === 'admin'): ?>
+                <?php if ($can_manage_content): ?>
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <a href="addHall.php" class="btn museum-btn-primary">
@@ -117,10 +139,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                         <thead>
                             <tr>
                                 <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                                <th><i class="fas fa-image me-2"></i>Фото</th>
                                 <th><i class="fas fa-building me-2"></i>Назва</th>
                                 <th><i class="fas fa-layer-group me-2"></i>Поверх</th>
                                 <th><i class="fas fa-align-left me-2"></i>Опис</th>
-                                <?php if ($role === 'admin'): ?>
+                                <?php if ($can_manage_content): ?>
                                     <th><i class="fas fa-cogs me-2"></i>Дії</th>
                                 <?php endif; ?>
                             </tr>
@@ -130,6 +153,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                                 <?php while ($row = $result->fetch_assoc()): ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($row['id']); ?></td>
+                                        <td>
+                                            <?php if ($row['photo_path']): ?>
+                                                <img src="../<?php echo htmlspecialchars($row['photo_path']); ?>" 
+                                                     alt="Фото залу" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                                            <?php else: ?>
+                                                <div class="bg-light d-flex align-items-center justify-content-center" 
+                                                     style="width: 60px; height: 60px; border-radius: 4px;">
+                                                    <i class="fas fa-image text-muted"></i>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
                                         <td>
                                             <strong class="text-museum-primary">
                                                 <i class="fas fa-door-open me-2"></i>
@@ -147,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                                                 <?php echo htmlspecialchars($row['description']); ?>
                                             </div>
                                         </td>
-                                        <?php if ($role === 'admin'): ?>
+                                        <?php if ($can_manage_content): ?>
                                             <td>
                                                 <div class="d-flex gap-2">
                                                     <form method="POST" action="editHall.php" style="display: inline;">
@@ -156,11 +190,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                                                             <i class="fas fa-edit"></i>
                                                         </button>
                                                     </form>
+                                                    <?php if ($role === 'admin'): ?>
                                                     <button class="btn btn-sm museum-btn-danger" 
                                                             onclick="confirmDelete('<?php echo htmlspecialchars($row['name']); ?>', <?php echo $row['id']; ?>)"
                                                             title="Видалити">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
+                                                    <?php endif; ?>
                                                 </div>
                                             </td>
                                         <?php endif; ?>
@@ -168,7 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="<?php echo $role === 'admin' ? 5 : 4; ?>" class="text-center py-5">
+                                    <td colspan="<?php echo $can_manage_content ? 6 : 5; ?>" class="text-center py-5">
                                         <div class="text-muted">
                                             <i class="fas fa-building fa-3x mb-3"></i>
                                             <h5>Зали не знайдено</h5>

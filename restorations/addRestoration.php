@@ -1,5 +1,9 @@
 <?php
 include '../connectionString.php';
+include '../log_functions.php';
+
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: restorations.php');
@@ -15,11 +19,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Валідація
     if (empty($exhibit_id) || empty($restoration_date)) {
         echo "<script>alert('ID експоната та дата реставрації є обов’язковими!');</script>";
-    } else {
-        // Додавання нової реставрації
+    } else {        // Додавання нової реставрації
         $stmt = $conn->prepare("INSERT INTO restorations (exhibit_id, restoration_date, employee_id, description) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("isis", $exhibit_id, $restoration_date, $employee_id, $description);
         if ($stmt->execute()) {
+            $new_restoration_id = $conn->insert_id;
+            
+            // Логування додавання
+            $action_details = "Додано нову реставрацію\nЕкспонат ID: $exhibit_id\nДата реставрації: $restoration_date";
+            if (!empty($employee_id)) {
+                $action_details .= "\nСпівробітник ID: $employee_id";
+            }
+            if (!empty($description)) {
+                $action_details .= "\nОпис: $description";
+            }
+            logActivity($conn, 'INSERT', 'restorations', $new_restoration_id, $action_details);
+            
             echo "<script>alert('Реставрацію успішно додано!'); window.location.href = 'restorations.php';</script>";
         } else {
             echo "<script>alert('Помилка при додаванні реставрації.');</script>";

@@ -1,5 +1,9 @@
 <?php
 include '../connectionString.php';
+include '../log_functions.php';
+
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: visitors.php');
@@ -23,11 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['last_name'])) {
     // Валідація
     if (empty($last_name) || empty($first_name) || empty($email) || ctype_space($last_name) || ctype_space($first_name) || ctype_space($email)) {
         echo "<script>alert('Будь ласка, заповніть усі поля коректно.');</script>";
-    } else {
-        // Оновлення даних відвідувача
+    } else {        // Оновлення даних відвідувача
         $stmt = $conn->prepare("UPDATE visitors SET last_name = ?, first_name = ?, email = ?, visitor_type = ? WHERE id = ?");
         $stmt->bind_param("ssssi", $last_name, $first_name, $email, $visitor_type, $id);
         if ($stmt->execute()) {
+            // Логування оновлення
+            $action_details = "Оновлено відвідувача: $last_name $first_name (ID: $id)\nEmail: $email\nТип: $visitor_type";
+            logActivity($conn, 'UPDATE', 'visitors', $id, $action_details);
+            
             echo "<script>alert('Дані відвідувача успішно оновлено!'); window.location.href = 'visitors.php';</script>";
         } else {
             echo "<script>alert('Помилка при оновленні даних відвідувача.');</script>";

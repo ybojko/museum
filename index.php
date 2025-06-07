@@ -110,6 +110,26 @@
 </div>
 
 <div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <h3 class="section-title">Відкрийте музей разом з нами</h3>
+                <p class="text-muted">Перегляньте відео-екскурсію нашим музеєм</p>
+            </div>
+            <div class="ratio ratio-16x9 shadow rounded overflow-hidden">
+                <iframe 
+                    src="https://www.youtube.com/embed/vlPj4MKYJJI" 
+                    title="Museum Video Tour" 
+                    allowfullscreen
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
     <div class="row g-4">
         <div class="col-md-4">
             <div class="feature-card">

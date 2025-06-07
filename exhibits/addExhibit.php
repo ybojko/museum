@@ -1,7 +1,11 @@
 <?php
 include '../connectionString.php';
+include '../log_functions.php';
 
-if ($_SESSION['role'] !== 'admin') {
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
+
+if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'content_manager') {
     header('Location: exhibits.php');
     exit;
 }
@@ -23,11 +27,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $target_dir = "../exhibits_uploads/";
             $target_file = $target_dir . basename($photo);
             move_uploaded_file($_FILES['photo']['tmp_name'], $target_file);
-        }
-
-        $stmt = $conn->prepare("INSERT INTO exhibits (name, description, year_created, condition_status, hall_id, last_restoration, photo) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        }        $stmt = $conn->prepare("INSERT INTO exhibits (name, description, year_created, condition_status, hall_id, last_restoration, photo) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssissss", $name, $description, $year_created, $condition_status, $hall_id, $last_restoration, $photo);
         if ($stmt->execute()) {
+            $new_exhibit_id = $conn->insert_id;
+            
+            // Логування додавання
+            $action_details = "Додано новий експонат: $name\nОпис: $description\nРік створення: $year_created\nСтан: $condition_status";
+            if (!empty($hall_id)) {
+                $action_details .= "\nЗал ID: $hall_id";
+            }
+            logActivity($conn, 'INSERT', 'exhibits', $new_exhibit_id, $action_details);
+            
             echo "<script>alert('Експонат успішно додано!'); window.location.href = 'exhibits.php';</script>";
         } else {
             echo "<script>alert('Помилка при додаванні експонату.');</script>";

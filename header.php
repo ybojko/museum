@@ -1,4 +1,3 @@
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
         <a class="navbar-brand" href="#">Краєзнавчий музей</a>
@@ -36,7 +35,32 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/museum/visitors/visitors.php">Відвідувачі</a>
                     </li>
-                <?php endif; ?>                <?php if (isset($_SESSION['user_id'])): ?>
+                <?php endif; ?>
+                <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'visitor_manager' || $_SESSION['role'] === 'admin')): ?>
+                    <?php if ($_SESSION['role'] === 'visitor_manager'): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/museum/visitors/visitors.php">Відвідувачі</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/museum/reviews/reviews.php">Відгуки</a>
+                    </li>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'visitor_manager' || $_SESSION['role'] === 'staff_manager')): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/museum/admin_dashboard.php">
+                            <i class="fas fa-tachometer-alt me-1"></i>Панель адміністратора
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'staff_manager' || $_SESSION['role'] === 'admin')): ?>
+                    <?php if ($_SESSION['role'] === 'staff_manager'): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/museum/employees/employees.php">Робітники</a>
+                    </li>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <?php if (isset($_SESSION['user_id'])): ?>
                     <li class="nav-item">
                         <a class="nav-link" href="/museum/profile.php">
                             <i class="fas fa-user me-1"></i>Профіль

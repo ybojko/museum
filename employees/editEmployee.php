@@ -1,5 +1,9 @@
 <?php
 include '../connectionString.php';
+include '../log_functions.php';
+
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: employees.php');
@@ -36,12 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['last_name'])) {
             $target_file = $target_dir . basename($photo);
             move_uploaded_file($_FILES['photo']['tmp_name'], $target_file);
         } else {
-            $photo = $employee['photo']; якщо нове не завантажено
-        }
-
-        $stmt = $conn->prepare("UPDATE employees SET last_name = ?, first_name = ?, position = ?, hire_date = ?, email = ?, phone = ?, hall_id = ?, photo = ?, salary = ? WHERE id = ?");
+            $photo = $employee['photo']; // якщо нове не завантажено
+        }        $stmt = $conn->prepare("UPDATE employees SET last_name = ?, first_name = ?, position = ?, hire_date = ?, email = ?, phone = ?, hall_id = ?, photo = ?, salary = ? WHERE id = ?");
         $stmt->bind_param("ssssssisis", $last_name, $first_name, $position, $hire_date, $email, $phone, $hall_id, $photo, $salary, $id);
         if ($stmt->execute()) {
+            // Логування оновлення
+            $action_details = "Оновлено співробітника: $last_name $first_name (ID: $id)\nПосада: $position\nЗарплата: $salary\nEmail: $email";
+            logActivity($conn, 'UPDATE', 'employees', $id, $action_details);
+            
             echo "<script>alert('Дані робітника успішно оновлено!'); window.location.href = 'employees.php';</script>";
         } else {
             echo "<script>alert('Помилка при оновленні даних робітника.');</script>";

@@ -1,7 +1,11 @@
 <?php
 include '../connectionString.php';
+include '../log_functions.php';
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
+
+if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'content_manager')) {
     header('Location: halls.php');
     exit;
 }
@@ -17,13 +21,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
     $name = trim($_POST['name']);
     $floor = trim($_POST['floor']);
     $description = trim($_POST['description']);
+    $photo_path = $hall['photo_path']; // Keep existing photo by default
    
     if (empty($name) || empty($floor)) {
         echo "<script>alert('Назва та поверх є обов'язковими!');</script>";
     } else {
-        $stmt = $conn->prepare("UPDATE halls SET name = ?, floor = ?, description = ? WHERE id = ?");
-        $stmt->bind_param("sisi", $name, $floor, $description, $id);
+        // Handle photo upload
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
+            $upload_dir = '../assets/images/halls/';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+            
+            $file_extension = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+            $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+            
+            if (in_array($file_extension, $allowed_types)) {
+                // Delete old photo if exists
+                if ($hall['photo_path'] && file_exists('../' . $hall['photo_path'])) {
+                    unlink('../' . $hall['photo_path']);
+                }
+                
+                $new_filename = 'hall_' . time() . '.' . $file_extension;
+                $upload_path = $upload_dir . $new_filename;
+                
+                if (move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
+                    $photo_path = 'assets/images/halls/' . $new_filename;
+                }
+            }
+        }        $stmt = $conn->prepare("UPDATE halls SET name = ?, floor = ?, description = ?, photo_path = ? WHERE id = ?");
+        $stmt->bind_param("sissi", $name, $floor, $description, $photo_path, $id);
         if ($stmt->execute()) {
+            // Логування оновлення
+            $action_details = "Оновлено зал: $name (ID: $id)\nПоверх: $floor";
+            if (!empty($description)) {
+                $action_details .= "\nОпис: $description";
+            }
+            if ($photo_path) {
+                $action_details .= "\nФото: $photo_path";
+            }
+            logActivity($conn, 'UPDATE', 'halls', $id, $action_details);
+            
             echo "<script>alert('Зал успішно оновлено!'); window.location.href = 'halls.php';</script>";
         } else {
             echo "<script>alert('Помилка при оновленні залу.');</script>";
@@ -69,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
 
                 <div class="museum-card">
                     <div class="card-body">
-                        <form method="POST">
+                        <form method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="id" value="<?php echo $id; ?>">
                             
                             <div class="row">
@@ -96,6 +134,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
                                     <i class="fas fa-align-left me-2"></i>Опис
                                 </label>
                                 <textarea class="form-control museum-input" id="description" name="description" rows="4"><?php echo htmlspecialchars($hall['description']); ?></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="photo" class="form-label fw-bold">
+                                    <i class="fas fa-camera me-2"></i>Фото залу
+                                </label>
+                                <?php if ($hall['photo_path']): ?>
+                                    <div class="mb-2">
+                                        <img src="../<?php echo htmlspecialchars($hall['photo_path']); ?>" 
+                                             alt="Поточне фото" class="img-thumbnail" style="max-width: 200px;">
+                                        <p class="text-muted small">Поточне фото</p>
+                                    </div>
+                                <?php endif; ?>
+                                <input type="file" class="form-control museum-input" id="photo" name="photo" accept="image/*">
+                                <div class="form-text">Підтримувані формати: JPG, JPEG, PNG, GIF. Залиште порожнім, щоб зберегти поточне фото.</div>
                             </div>
 
                             <div class="text-center">

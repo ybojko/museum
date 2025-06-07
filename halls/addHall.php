@@ -1,6 +1,11 @@
 <?php
 include '../connectionString.php';
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+include '../log_functions.php';
+
+// Створюємо таблицю логів, якщо вона не існує
+createLogsTableIfNotExists($conn);
+
+if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'content_manager')) {
     header('Location: halls.php');
     exit;
 }
@@ -9,13 +14,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
     $floor = trim($_POST['floor']);
     $description = trim($_POST['description']);
+    $photo_path = null;
 
     if (empty($name) || empty($floor)) {
         echo "<script>alert('Назва та поверх є обов'язковими!');</script>";
     } else {
-        $stmt = $conn->prepare("INSERT INTO halls (name, floor, description) VALUES (?, ?, ?)");
-        $stmt->bind_param("sis", $name, $floor, $description);
+        // Handle photo upload
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
+            $upload_dir = '../assets/images/halls/';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+            
+            $file_extension = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+            $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+            
+            if (in_array($file_extension, $allowed_types)) {
+                $new_filename = 'hall_' . time() . '.' . $file_extension;
+                $upload_path = $upload_dir . $new_filename;
+                
+                if (move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
+                    $photo_path = 'assets/images/halls/' . $new_filename;
+                }
+            }
+        }        $stmt = $conn->prepare("INSERT INTO halls (name, floor, description, photo_path) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("siss", $name, $floor, $description, $photo_path);
         if ($stmt->execute()) {
+            $new_hall_id = $conn->insert_id;
+            
+            // Логування додавання
+            $action_details = "Додано новий зал: $name\nПоверх: $floor";
+            if (!empty($description)) {
+                $action_details .= "\nОпис: $description";
+            }
+            if ($photo_path) {
+                $action_details .= "\nФото: $photo_path";
+            }
+            logActivity($conn, 'INSERT', 'halls', $new_hall_id, $action_details);
+            
             echo "<script>alert('Зал успішно додано!'); window.location.href = 'halls.php';</script>";
         } else {
             echo "<script>alert('Помилка при додаванні залу.');</script>";
@@ -49,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="museum-card">
                     <div class="card-body">
-                        <form method="POST">
+                        <form method="POST" enctype="multipart/form-data">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -74,6 +110,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <i class="fas fa-align-left me-2"></i>Опис
                                 </label>
                                 <textarea class="form-control museum-input" id="description" name="description" rows="4"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="photo" class="form-label fw-bold">
+                                    <i class="fas fa-camera me-2"></i>Фото залу
+                                </label>
+                                <input type="file" class="form-control museum-input" id="photo" name="photo" accept="image/*">
+                                <div class="form-text">Підтримувані формати: JPG, JPEG, PNG, GIF</div>
                             </div>
 
                             <div class="text-center">
