@@ -6,7 +6,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav me-auto">
                 <li class="nav-item">
                     <a class="nav-link active" href="/museum/index.php">Головна</a>
                 </li>
@@ -81,4 +81,17 @@
         </div>
     </div>
 </nav>
+<style>
+    .navbar-nav {
+        flex-wrap: wrap;
+    }
+    .nav-item {
+        margin-right: 0.5rem;
+    }
+    @media (max-width: 991px) {
+        .navbar-nav {
+            margin-top: 0.5rem;
+        }
+    }
+</style>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
