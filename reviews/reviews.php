@@ -34,6 +34,11 @@ $result = $conn->query($sql);
                 <div class="d-flex align-items-center mb-4">
                     <i class="fas fa-comments museum-icon me-3" style="font-size: 2rem; color: var(--museum-accent);"></i>
                     <h3 class="museum-title mb-0">Всі відгуки</h3>
+                    <div class="ms-auto">
+                        <a href="../export_excel.php?table=reviews" class="btn museum-btn-secondary">
+                            <i class="fas fa-file-excel me-2"></i>Експорт в Excel
+                        </a>
+                    </div>
                 </div>
 
                 <div class="table-responsive">

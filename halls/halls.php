@@ -104,6 +104,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                             <i class="fas fa-plus me-2"></i>Додати новий зал
                         </a>
                     </div>
+                    <div class="col-md-6 text-end">
+                        <a href="../export_excel.php?table=halls" class="btn museum-btn-secondary">
+                            <i class="fas fa-file-excel me-2"></i>Експорт в Excel
+                        </a>
+                    </div>
                 </div>
                 <?php endif; ?>
 

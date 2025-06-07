@@ -121,6 +121,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role
                             <i class="fas fa-plus me-2"></i>Додати нового робітника
                         </a>
                     </div>
+                    <div class="col-md-6 text-end">
+                        <a href="../export_excel.php?table=employees" class="btn museum-btn-secondary">
+                            <i class="fas fa-file-excel me-2"></i>Експорт в Excel
+                        </a>
+                    </div>
+                </div>
+                <?php elseif ($role === 'staff_manager'): ?>
+                <div class="row mb-4">
+                    <div class="col-md-12 text-end">
+                        <a href="../export_excel.php?table=employees" class="btn museum-btn-secondary">
+                            <i class="fas fa-file-excel me-2"></i>Експорт в Excel
+                        </a>
+                    </div>
                 </div>
                 <?php endif; ?>
 

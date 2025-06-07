@@ -50,6 +50,13 @@ $result = $stmt->get_result();
                             <i class="fas fa-plus me-2"></i>Створити новий квиток
                         </a>
                     </div>
+                    <?php if ($role === 'admin' || $role === 'visitor_manager'): ?>
+                    <div class="col-md-6 text-end">
+                        <a href="../export_excel.php?table=tickets" class="btn museum-btn-secondary">
+                            <i class="fas fa-file-excel me-2"></i>Експорт в Excel
+                        </a>
+                    </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="table-responsive">

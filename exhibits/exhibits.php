@@ -102,6 +102,11 @@ $result = $stmt->get_result();
                             <i class="fas fa-plus me-2"></i>Додати новий експонат
                         </a>
                     </div>
+                    <div class="col-md-6 text-end">
+                        <a href="../export_excel.php?table=exhibits" class="btn museum-btn-secondary">
+                            <i class="fas fa-file-excel me-2"></i>Експорт в Excel
+                        </a>
+                    </div>
                 </div>
                 <?php endif; ?>
 
