@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'content_manager') {
@@ -32,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute()) {
             $new_exhibit_id = $conn->insert_id;
             
-            // Логування додавання
             $action_details = "Додано новий експонат: $name\nОпис: $description\nРік створення: $year_created\nСтан: $condition_status";
             if (!empty($hall_id)) {
                 $action_details .= "\nЗал ID: $hall_id";

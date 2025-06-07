@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'visitor_manager')) {

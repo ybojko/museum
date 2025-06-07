@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -38,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute()) {
             $new_employee_id = $conn->insert_id;
             
-            // Логування додавання
             $action_details = "Додано нового співробітника: $last_name $first_name\nПосада: $position\nЗарплата: $salary\nEmail: $email";
             logActivity($conn, 'INSERT', 'employees', $new_employee_id, $action_details);
             

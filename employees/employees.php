@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'staff_manager')) {
@@ -12,15 +11,12 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['ro
 
 $role = $_SESSION['role'];
 
-// Отримання параметрів пошуку
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Формування SQL-запиту для офлайн робітників
 $sql = "SELECT * FROM employees WHERE 1=1";
 $params = [];
 $types = "";
 
-// Додавання пошуку
 if (!empty($search)) {
     $sql .= " AND (last_name LIKE ? OR salary LIKE ? OR first_name LIKE ? OR position LIKE ? OR email LIKE ? OR phone LIKE ?)";
     $search_param = "%$search%";
@@ -28,7 +24,6 @@ if (!empty($search)) {
     $types = str_repeat("s", 6);
 }
 
-// Підготовка запиту для офлайн робітників
 $stmt = $conn->prepare($sql);
 if (!empty($params)) {
     $stmt->bind_param($types, ...$params);
@@ -36,7 +31,6 @@ if (!empty($params)) {
 $stmt->execute();
 $result = $stmt->get_result();
 
-// SQL-запит для онлайн робітників (користувачі з ролями, відмінними від 'user')
 $sql_staff = "SELECT id, username, email, created_at, role FROM users WHERE role != 'user'";
 $params_staff = [];
 $types_staff = "";
@@ -55,11 +49,9 @@ if (!empty($params_staff)) {
 $stmt_staff->execute();
 $result_staff = $stmt_staff->get_result();
 
-// Видалення запису (тільки для адміна)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role === 'admin') {
     $delete_id = $_POST['delete_id'];
 
-    // Отримуємо інформацію про співробітника перед видаленням для логування
     $info_stmt = $conn->prepare("SELECT last_name, first_name, position FROM employees WHERE id = ?");
     $info_stmt->bind_param("i", $delete_id);
     $info_stmt->execute();
@@ -70,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role
     $delete_stmt = $conn->prepare("DELETE FROM employees WHERE id = ?");
     $delete_stmt->bind_param("i", $delete_id);
     if ($delete_stmt->execute()) {
-        // Логування видалення
         if ($employee_info) {
             $action_details = "Видалено співробітника: {$employee_info['last_name']} {$employee_info['first_name']}\nПосада: {$employee_info['position']}";
             logActivity($conn, 'DELETE', 'employees', $delete_id, $action_details);

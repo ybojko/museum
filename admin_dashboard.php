@@ -8,7 +8,6 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['ro
 
 $role = $_SESSION['role'];
 
-// Створення таблиці логів, якщо вона не існує
 $create_logs_table = "
 CREATE TABLE IF NOT EXISTS activity_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -26,7 +25,6 @@ CREATE TABLE IF NOT EXISTS activity_logs (
 )";
 $conn->query($create_logs_table);
 
-// Функція для обмеження логів до 10 записів на таблицю
 function limitLogsPerTable($conn) {
     $tables = ['employees', 'exhibits', 'exhibitions', 'halls', 'restorations', 'visitors', 'tickets', 'reviews'];
     
@@ -46,16 +44,12 @@ function limitLogsPerTable($conn) {
     }
 }
 
-// Виконуємо обмеження логів
 limitLogsPerTable($conn);
 
-// Формування SQL-запиту для отримання логів в залежності від ролі
 if ($role === 'admin') {
-    // Адміністратор бачить всі логи
     $sql = "SELECT * FROM activity_logs ORDER BY timestamp DESC LIMIT 100";
     $stmt = $conn->prepare($sql);
 } else {
-    // Інші ролі бачать логи тільки для своїх таблиць
     $allowed_tables = [];
     
     switch ($role) {
@@ -76,7 +70,6 @@ if ($role === 'admin') {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(str_repeat('s', count($allowed_tables)), ...$allowed_tables);
     } else {
-        // Якщо немає дозволених таблиць, показуємо порожній результат
         $sql = "SELECT * FROM activity_logs WHERE 1=0";
         $stmt = $conn->prepare($sql);
     }
@@ -85,7 +78,6 @@ if ($role === 'admin') {
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Функція для отримання іконки за типом дії
 function getActionIcon($action) {
     switch ($action) {
         case 'INSERT': return 'fas fa-plus-circle text-success';
@@ -95,7 +87,6 @@ function getActionIcon($action) {
     }
 }
 
-// Функція для отримання іконки за таблицею
 function getTableIcon($table) {
     switch ($table) {
         case 'employees': return 'fas fa-users';
@@ -110,7 +101,6 @@ function getTableIcon($table) {
     }
 }
 
-// Функція для отримання назви таблиці українською
 function getTableNameUkr($table) {
     switch ($table) {
         case 'employees': return 'Співробітники';
@@ -195,7 +185,6 @@ function getTableNameUkr($table) {
             </div>
         </div>
 
-        <!-- Статистика -->
         <div class="row mb-4">
             <div class="col-md-3">
                 <div class="stats-card text-center">
@@ -242,7 +231,6 @@ function getTableNameUkr($table) {
             </div>
         </div>
 
-        <!-- Швидкі дії -->
         <div class="museum-card mb-4">
             <div class="card-body">
                 <h5 class="card-title">
@@ -297,7 +285,6 @@ function getTableNameUkr($table) {
             </div>
         </div>
 
-        <!-- Логи активності -->
         <div class="museum-card">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between mb-4">

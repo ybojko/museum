@@ -2,7 +2,6 @@
 include '../connectionString.php'; 
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -35,7 +34,6 @@ $result = $stmt->get_result();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $delete_id = $_POST['delete_id'];
 
-    // Отримуємо інформацію про зал перед видаленням для логування
     $info_stmt = $conn->prepare("SELECT name, floor, description FROM halls WHERE id = ?");
     $info_stmt->bind_param("i", $delete_id);
     $info_stmt->execute();
@@ -46,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $delete_stmt = $conn->prepare("DELETE FROM halls WHERE id = ?");
     $delete_stmt->bind_param("i", $delete_id);
     if ($delete_stmt->execute()) {
-        // Логування видалення
         if ($hall_info) {
             $action_details = "Видалено зал: {$hall_info['name']}\nПоверх: {$hall_info['floor']}";
             if (!empty($hall_info['description'])) {

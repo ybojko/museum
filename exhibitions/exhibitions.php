@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'guest';
@@ -11,7 +10,6 @@ $can_manage_content = ($role === 'admin' || $role === 'content_manager');
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role === 'admin') {
     $delete_id = $_POST['delete_id'];
 
-    // Отримуємо інформацію про виставку перед видаленням для логування
     $info_stmt = $conn->prepare("SELECT title, start_date, end_date FROM exhibitions WHERE id = ?");
     $info_stmt->bind_param("i", $delete_id);
     $info_stmt->execute();
@@ -22,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role
     $delete_stmt = $conn->prepare("DELETE FROM exhibitions WHERE id = ?");
     $delete_stmt->bind_param("i", $delete_id);
     if ($delete_stmt->execute()) {
-        // Логування видалення
         if ($exhibition_info) {
             $action_details = "Видалено виставку: {$exhibition_info['title']}\nПочаток: {$exhibition_info['start_date']}\nЗавершення: {$exhibition_info['end_date']}";
             logActivity($conn, 'DELETE', 'exhibitions', $delete_id, $action_details);

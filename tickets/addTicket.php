@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || !isset($_SESSION['user_id'])) {
@@ -20,12 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($exhibition_id <= 0) {
         echo "<script>alert('Будь ласка, виберіть виставку.');</script>";
-    } else {        $stmt = $conn->prepare("INSERT INTO tickets (user_id, exhibition_id, purchase_date) VALUES (?, ?, ?)");
+    } else {        
+        $stmt = $conn->prepare("INSERT INTO tickets (user_id, exhibition_id, purchase_date) VALUES (?, ?, ?)");
         $stmt->bind_param("iis", $user_id, $exhibition_id, $purchase_date);
         if ($stmt->execute()) {
             $new_ticket_id = $conn->insert_id;
             
-            // Отримуємо назву виставки для логування
             $exhibition_stmt = $conn->prepare("SELECT title FROM exhibitions WHERE id = ?");
             $exhibition_stmt->bind_param("i", $exhibition_id);
             $exhibition_stmt->execute();
@@ -33,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $exhibition_info = $exhibition_result->fetch_assoc();
             $exhibition_stmt->close();
             
-            // Логування додавання
             $exhibition_title = $exhibition_info ? $exhibition_info['title'] : "Виставка ID: $exhibition_id";
             $action_details = "Придбано квиток на виставку: $exhibition_title\nКористувач: $username\nДата покупки: $purchase_date";
             logActivity($conn, 'INSERT', 'tickets', $new_ticket_id, $action_details);

@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'content_manager')) {
@@ -19,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($name) || empty($floor)) {
         echo "<script>alert('Назва та поверх є обов'язковими!');</script>";
     } else {
-        // Handle photo upload
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
             $upload_dir = '../assets/images/halls/';
             if (!is_dir($upload_dir)) {
@@ -42,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute()) {
             $new_hall_id = $conn->insert_id;
             
-            // Логування додавання
             $action_details = "Додано новий зал: $name\nПоверх: $floor";
             if (!empty($description)) {
                 $action_details .= "\nОпис: $description";

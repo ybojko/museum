@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || !isset($_SESSION['username'])) {
@@ -11,7 +10,7 @@ if (!isset($_SESSION['role']) || !isset($_SESSION['username'])) {
 }
 
 $username = $_SESSION['username'];
-$user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'default'; // Значення за замовчуванням
+$user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'default';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $exhibition_title = isset($_POST['exhibition_title']) ? trim($_POST['exhibition_title']) : '';
@@ -28,12 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt_check->num_rows > 0) {
             echo "<script>alert('Ви вже залишили відгук для цієї виставки.'); window.location.href = '../tickets/tickets.php';</script>";
-        } else {            $stmt = $conn->prepare("INSERT INTO reviews (username, user_type, exhibition_title, review_text, review_date) VALUES (?, ?, ?, ?, ?)");
+        } else {            
+            $stmt = $conn->prepare("INSERT INTO reviews (username, user_type, exhibition_title, review_text, review_date) VALUES (?, ?, ?, ?, ?)");
             $stmt->bind_param("sssss", $username, $user_type, $exhibition_title, $review_text, $review_date);
             if ($stmt->execute()) {
                 $new_review_id = $conn->insert_id;
                 
-                // Логування додавання
                 $action_details = "Додано новий відгук\nКористувач: $username\nВиставка: $exhibition_title\nТекст відгуку: " . substr($review_text, 0, 100) . (strlen($review_text) > 100 ? '...' : '');
                 logActivity($conn, 'INSERT', 'reviews', $new_review_id, $action_details);
                 

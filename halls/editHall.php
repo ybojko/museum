@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'content_manager')) {
@@ -21,12 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
     $name = trim($_POST['name']);
     $floor = trim($_POST['floor']);
     $description = trim($_POST['description']);
-    $photo_path = $hall['photo_path']; // Keep existing photo by default
+    $photo_path = $hall['photo_path'];
    
     if (empty($name) || empty($floor)) {
         echo "<script>alert('Назва та поверх є обов'язковими!');</script>";
     } else {
-        // Handle photo upload
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
             $upload_dir = '../assets/images/halls/';
             if (!is_dir($upload_dir)) {
@@ -37,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
             $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
             
             if (in_array($file_extension, $allowed_types)) {
-                // Delete old photo if exists
                 if ($hall['photo_path'] && file_exists('../' . $hall['photo_path'])) {
                     unlink('../' . $hall['photo_path']);
                 }
@@ -49,10 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
                     $photo_path = 'assets/images/halls/' . $new_filename;
                 }
             }
-        }        $stmt = $conn->prepare("UPDATE halls SET name = ?, floor = ?, description = ?, photo_path = ? WHERE id = ?");
+        }        
+        $stmt = $conn->prepare("UPDATE halls SET name = ?, floor = ?, description = ?, photo_path = ? WHERE id = ?");
         $stmt->bind_param("sissi", $name, $floor, $description, $photo_path, $id);
         if ($stmt->execute()) {
-            // Логування оновлення
             $action_details = "Оновлено зал: $name (ID: $id)\nПоверх: $floor";
             if (!empty($description)) {
                 $action_details .= "\nОпис: $description";

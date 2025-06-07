@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -10,7 +9,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-// Отримання id через POST
 $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
 
 if ($id === 0) {
@@ -24,14 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['last_name'])) {
     $email = trim($_POST['email']);
     $visitor_type = isset($_POST['visitor_type']) && in_array($_POST['visitor_type'], ['default', 'benefitial']) ? $_POST['visitor_type'] : 'default';
 
-    // Валідація
     if (empty($last_name) || empty($first_name) || empty($email) || ctype_space($last_name) || ctype_space($first_name) || ctype_space($email)) {
         echo "<script>alert('Будь ласка, заповніть усі поля коректно.');</script>";
-    } else {        // Оновлення даних відвідувача
+    } else {
         $stmt = $conn->prepare("UPDATE visitors SET last_name = ?, first_name = ?, email = ?, visitor_type = ? WHERE id = ?");
         $stmt->bind_param("ssssi", $last_name, $first_name, $email, $visitor_type, $id);
         if ($stmt->execute()) {
-            // Логування оновлення
             $action_details = "Оновлено відвідувача: $last_name $first_name (ID: $id)\nEmail: $email\nТип: $visitor_type";
             logActivity($conn, 'UPDATE', 'visitors', $id, $action_details);
             
@@ -42,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['last_name'])) {
         $stmt->close();
     }
 } else {
-    // Завантаження даних відвідувача
     $stmt = $conn->prepare("SELECT * FROM visitors WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();

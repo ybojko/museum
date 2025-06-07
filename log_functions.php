@@ -1,9 +1,5 @@
 <?php
-/**
- * Функція для логування дій в системі
- */
 function logActivity($conn, $action_type, $table_name, $record_id = null, $action_details = null) {
-    // Перевіряємо, чи є активна сесія
     if (!isset($_SESSION['user_id']) || !isset($_SESSION['username']) || !isset($_SESSION['role'])) {
         return false;
     }
@@ -13,13 +9,11 @@ function logActivity($conn, $action_type, $table_name, $record_id = null, $actio
     $user_role = $_SESSION['role'];
     
     try {
-        // Вставляємо новий лог
         $stmt = $conn->prepare("INSERT INTO activity_logs (action_type, table_name, record_id, user_id, username, user_role, action_details) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssiisss", $action_type, $table_name, $record_id, $user_id, $username, $user_role, $action_details);
         $stmt->execute();
         $stmt->close();
         
-        // Обмежуємо кількість логів для цієї таблиці до 10
         limitLogsForTable($conn, $table_name);
         
         return true;
@@ -29,9 +23,6 @@ function logActivity($conn, $action_type, $table_name, $record_id = null, $actio
     }
 }
 
-/**
- * Функція для обмеження кількості логів до 10 для кожної таблиці
- */
 function limitLogsForTable($conn, $table_name) {
     try {
         $delete_old_logs = "
@@ -54,9 +45,6 @@ function limitLogsForTable($conn, $table_name) {
     }
 }
 
-/**
- * Створення таблиці логів, якщо вона не існує
- */
 function createLogsTableIfNotExists($conn) {
     $create_logs_table = "
     CREATE TABLE IF NOT EXISTS activity_logs (

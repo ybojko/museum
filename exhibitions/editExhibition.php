@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'content_manager') {
@@ -26,10 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
 
     if (empty($title) || empty($start_date) || empty($hall_id)) {
         echo "<script>alert('Будь ласка, заповніть усі обов'язкові поля.');</script>";
-    } else {        $stmt = $conn->prepare("UPDATE exhibitions SET title = ?, start_date = ?, end_date = ?, hall_id = ?, description = ? WHERE id = ?");
+    } else {
+        $stmt = $conn->prepare("UPDATE exhibitions SET title = ?, start_date = ?, end_date = ?, hall_id = ?, description = ? WHERE id = ?");
         $stmt->bind_param("sssdsd", $title, $start_date, $end_date, $hall_id, $description, $id);
         if ($stmt->execute()) {
-            // Логування оновлення
             $action_details = "Оновлено виставку: $title (ID: $id)\nПочаток: $start_date\nЗавершення: $end_date\nЗал ID: $hall_id";
             if (!empty($description)) {
                 $action_details .= "\nОпис: $description";

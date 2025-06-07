@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'guest';
@@ -10,7 +9,6 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'guest';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role === 'admin') {
     $delete_id = $_POST['delete_id'];
 
-    // Отримуємо інформацію про реставрацію перед видаленням для логування
     $info_stmt = $conn->prepare("SELECT exhibit_id, restoration_date, employee_id, description FROM restorations WHERE id = ?");
     $info_stmt->bind_param("i", $delete_id);
     $info_stmt->execute();
@@ -21,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role
     $delete_stmt = $conn->prepare("DELETE FROM restorations WHERE id = ?");
     $delete_stmt->bind_param("i", $delete_id);
     if ($delete_stmt->execute()) {
-        // Логування видалення
         if ($restoration_info) {
             $action_details = "Видалено реставрацію\nЕкспонат ID: {$restoration_info['exhibit_id']}\nДата реставрації: {$restoration_info['restoration_date']}";
             if (!empty($restoration_info['employee_id'])) {
@@ -42,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role
 
 $employee_id_filter = isset($_GET['employee_id']) ? intval($_GET['employee_id']) : '';
 $description_filter = isset($_GET['description']) ? trim($_GET['description']) : '';
-$order = isset($_GET['order']) && in_array($_GET['order'], ['asc', 'desc']) ? $_GET['order'] : 'asc'; // Порядок сортування
+$order = isset($_GET['order']) && in_array($_GET['order'], ['asc', 'desc']) ? $_GET['order'] : 'asc';
 
 $sql = "SELECT * FROM restorations WHERE 1=1";
 $params = [];

@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'content_manager') {
@@ -19,12 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($title) || empty($start_date) || empty($hall_id)) {
         echo "<script>alert('Будь ласка, заповніть усі обов'язкові поля.');</script>";
-    } else {        $stmt = $conn->prepare("INSERT INTO exhibitions (title, start_date, end_date, hall_id, description) VALUES (?, ?, ?, ?, ?)");
+    } else {
+        $stmt = $conn->prepare("INSERT INTO exhibitions (title, start_date, end_date, hall_id, description) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssds", $title, $start_date, $end_date, $hall_id, $description);
         if ($stmt->execute()) {
             $new_exhibition_id = $conn->insert_id;
             
-            // Логування додавання
             $action_details = "Додано нову виставку: $title\nПочаток: $start_date\nЗавершення: $end_date\nЗал ID: $hall_id";
             if (!empty($description)) {
                 $action_details .= "\nОпис: $description";

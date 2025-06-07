@@ -2,7 +2,6 @@
 include '../connectionString.php';
 include '../log_functions.php';
 
-// Створюємо таблицю логів, якщо вона не існує
 createLogsTableIfNotExists($conn);
 
 if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'content_manager') {
@@ -44,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
         } else {
             $stmt = $conn->prepare("UPDATE exhibits SET name = ?, description = ?, year_created = ?, condition_status = ?, hall_id = ?, last_restoration = ? WHERE id = ?");
             $stmt->bind_param("ssisssi", $name, $description, $year_created, $condition_status, $hall_id, $last_restoration, $id);
-        }        if ($stmt->execute()) {
-            // Логування оновлення
+        }        
+        if ($stmt->execute()) {
             $action_details = "Оновлено експонат: $name (ID: $id)\nОпис: $description\nРік створення: $year_created\nСтан: $condition_status";
             if (!empty($hall_id)) {
                 $action_details .= "\nЗал ID: $hall_id";

@@ -15,7 +15,6 @@ if (!in_array($table, $allowed_tables)) {
     exit;
 }
 
-// Check permissions
 $has_permission = false;
 switch ($table) {
     case 'restorations':
@@ -39,16 +38,13 @@ if (!$has_permission) {
     exit;
 }
 
-// Set headers for Excel download
 header('Content-Type: application/vnd.ms-excel; charset=utf-8');
 header('Content-Disposition: attachment; filename="' . $table . '_export_' . date('Y-m-d') . '.xls"');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-// Output BOM for UTF-8
 echo "\xEF\xBB\xBF";
 
-// Get data based on table
 switch ($table) {
     case 'restorations':
         $sql = "SELECT * FROM restorations ORDER BY restoration_date DESC";
@@ -79,10 +75,8 @@ switch ($table) {
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
-    // Get column names
     $fields = $result->fetch_fields();
     
-    // Output header row
     echo '<table border="1">';
     echo '<tr>';
     foreach ($fields as $field) {
@@ -90,7 +84,6 @@ if ($result->num_rows > 0) {
     }
     echo '</tr>';
     
-    // Output data rows
     while ($row = $result->fetch_assoc()) {
         echo '<tr>';
         foreach ($row as $value) {
