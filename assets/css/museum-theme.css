@@ -731,6 +731,68 @@ body::before {
     to { opacity: 1; transform: translateY(0); }
 }
 
+.sortable {
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.sortable:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.sortable::after {
+    content: '\f0dc';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    float: right;
+    opacity: 0.5;
+    margin-left: 0.5rem;
+}
+
+.sortable.asc::after {
+    content: '\f0de';
+    opacity: 1;
+}
+
+.sortable.desc::after {
+    content: '\f0dd';
+    opacity: 1;
+}
+
+.sort-icon {
+    margin-left: 0.5rem;
+    opacity: 0.6;
+}
+
+.sortable:hover .sort-icon {
+    opacity: 1;
+}
+
+/* Custom cursor for index page */
+body.homepage {
+    cursor: url('../cursor/cursor.jpg'), auto;
+}
+
+body.homepage a, 
+body.homepage button, 
+body.homepage .btn, 
+body.homepage .nav-link, 
+body.homepage .dropdown-toggle,
+body.homepage .feature-card,
+body.homepage .showcase-item {
+    cursor: url('../cursor/cursor.jpg'), pointer;
+}
+
+body.homepage input[type="text"], 
+body.homepage input[type="email"], 
+body.homepage input[type="password"], 
+body.homepage textarea, 
+body.homepage .form-control {
+    cursor: url('../cursor/cursor.jpg'), text;
+}
+
 @media (max-width: 768px) {
     .navbar-brand {
         font-size: 1.4rem;

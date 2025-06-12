@@ -25,40 +25,25 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/museum/restorations/restorations.php">Реставрації</a>
                 </li>
-                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'staff_manager')): ?>
                     <li class="nav-item">
                         <a class="nav-link" href="/museum/employees/employees.php">Робітники</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/museum/reviews/reviews.php">Відгуки</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/museum/visitors/visitors.php">Відвідувачі</a>
-                    </li>
                 <?php endif; ?>
-                <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'visitor_manager' || $_SESSION['role'] === 'admin')): ?>
-                    <?php if ($_SESSION['role'] === 'visitor_manager'): ?>
+                <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'visitor_manager')): ?>
                     <li class="nav-item">
                         <a class="nav-link" href="/museum/visitors/visitors.php">Відвідувачі</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/museum/reviews/reviews.php">Відгуки</a>
                     </li>
-                    <?php endif; ?>
                 <?php endif; ?>
-                <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'visitor_manager' || $_SESSION['role'] === 'staff_manager')): ?>
+                <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'visitor_manager' || $_SESSION['role'] === 'staff_manager' || $_SESSION['role'] === 'content_manager')): ?>
                     <li class="nav-item">
                         <a class="nav-link" href="/museum/admin_dashboard.php">
                             <i class="fas fa-tachometer-alt me-1"></i>Панель адміністратора
                         </a>
                     </li>
-                <?php endif; ?>
-                <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'staff_manager' || $_SESSION['role'] === 'admin')): ?>
-                    <?php if ($_SESSION['role'] === 'staff_manager'): ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/museum/employees/employees.php">Робітники</a>
-                    </li>
-                    <?php endif; ?>
                 <?php endif; ?>
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li class="nav-item">

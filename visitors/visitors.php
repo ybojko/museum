@@ -72,6 +72,7 @@ $result_users = $stmt_users->get_result();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/css/museum-theme.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
 </head>
 <body class="museum-bg">
 <?php include '../header.php'; ?>
@@ -141,14 +142,14 @@ $result_users = $stmt_users->get_result();
                             <i class="fas fa-store me-2"></i>Офлайн-відвідувачі
                         </h5>
                         <div class="table-responsive">
-                            <table class="table museum-table">
+                            <table class="table museum-table" id="visitorsTable">
                                 <thead>
                                     <tr>
-                                        <th><i class="fas fa-hashtag me-2"></i>ID</th>
-                                        <th><i class="fas fa-user me-2"></i>Прізвище</th>
-                                        <th><i class="fas fa-user me-2"></i>Ім'я</th>
-                                        <th><i class="fas fa-envelope me-2"></i>Email</th>
-                                        <th><i class="fas fa-tag me-2"></i>Тип відвідувача</th>
+                                        <th class="sortable" data-column="0"><i class="fas fa-hashtag me-2"></i>ID</th>
+                                        <th class="sortable" data-column="1"><i class="fas fa-user me-2"></i>Прізвище</th>
+                                        <th class="sortable" data-column="2"><i class="fas fa-user me-2"></i>Ім'я</th>
+                                        <th class="sortable" data-column="3"><i class="fas fa-envelope me-2"></i>Email</th>
+                                        <th class="sortable" data-column="4"><i class="fas fa-tag me-2"></i>Тип відвідувача</th>
                                         <th><i class="fas fa-cogs me-2"></i>Дії</th>
                                     </tr>
                                 </thead>
@@ -206,14 +207,14 @@ $result_users = $stmt_users->get_result();
                             <i class="fas fa-globe me-2"></i>Онлайн-відвідувачі
                         </h5>
                         <div class="table-responsive">
-                            <table class="table museum-table">
+                            <table class="table museum-table" id="usersTable">
                                 <thead>
                                     <tr>
-                                        <th><i class="fas fa-hashtag me-2"></i>ID</th>
-                                        <th><i class="fas fa-user me-2"></i>Ім'я користувача</th>
-                                        <th><i class="fas fa-envelope me-2"></i>Email</th>
-                                        <th><i class="fas fa-calendar me-2"></i>Дата створення</th>
-                                        <th><i class="fas fa-tag me-2"></i>Тип акаунта</th>
+                                        <th class="sortable" data-column="0"><i class="fas fa-hashtag me-2"></i>ID</th>
+                                        <th class="sortable" data-column="1"><i class="fas fa-user me-2"></i>Ім'я користувача</th>
+                                        <th class="sortable" data-column="2"><i class="fas fa-envelope me-2"></i>Email</th>
+                                        <th class="sortable" data-column="3"><i class="fas fa-calendar me-2"></i>Дата створення</th>
+                                        <th class="sortable" data-column="4"><i class="fas fa-tag me-2"></i>Тип акаунта</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -255,6 +256,56 @@ $result_users = $stmt_users->get_result();
         </div>
     </div>
 </div>
+
+<script>
+function sortTable(tableId, column, direction) {
+    const table = document.getElementById(tableId);
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    
+    rows.sort((a, b) => {
+        const aText = a.cells[column].textContent.trim();
+        const bText = b.cells[column].textContent.trim();
+        
+        if (!isNaN(aText) && !isNaN(bText)) {
+            return direction === 'asc' ? aText - bText : bText - aText;
+        }
+        
+        return direction === 'asc' 
+            ? aText.localeCompare(bText, 'uk') 
+            : bText.localeCompare(aText, 'uk');
+    });
+    
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.sortable').forEach(header => {
+        header.addEventListener('click', function() {
+            const table = this.closest('table');
+            const column = parseInt(this.dataset.column);
+            
+            document.querySelectorAll(`#${table.id} .sortable`).forEach(h => {
+                if (h !== this) {
+                    h.classList.remove('asc', 'desc');
+                }
+            });
+            
+            let direction = 'asc';
+            if (this.classList.contains('asc')) {
+                direction = 'desc';
+                this.classList.remove('asc');
+                this.classList.add('desc');
+            } else {
+                this.classList.remove('desc');
+                this.classList.add('asc');
+            }
+            
+            sortTable(table.id, column, direction);
+        });
+    });
+});
+</script>
 
 <?php include '../footer.php'; ?>
 </body>

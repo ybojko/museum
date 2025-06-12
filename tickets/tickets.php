@@ -31,6 +31,55 @@ $result = $stmt->get_result();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/css/museum-theme.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        function sortTable(tableId, column, direction) {
+            const table = document.getElementById(tableId);
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            rows.sort((a, b) => {
+                const aText = a.cells[column].textContent.trim();
+                const bText = b.cells[column].textContent.trim();
+                
+                if (!isNaN(aText) && !isNaN(bText)) {
+                    return direction === 'asc' ? aText - bText : bText - aText;
+                }
+                
+                return direction === 'asc' 
+                    ? aText.localeCompare(bText, 'uk') 
+                    : bText.localeCompare(aText, 'uk');
+            });
+            
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.sortable').forEach(header => {
+                header.addEventListener('click', function() {
+                    const table = this.closest('table');
+                    const column = parseInt(this.dataset.column);
+                    
+                    document.querySelectorAll(`#${table.id} .sortable`).forEach(h => {
+                        if (h !== this) {
+                            h.classList.remove('asc', 'desc');
+                        }
+                    });
+                    
+                    let direction = 'asc';
+                    if (this.classList.contains('asc')) {
+                        direction = 'desc';
+                        this.classList.remove('asc');
+                        this.classList.add('desc');
+                    } else {
+                        this.classList.remove('desc');
+                        this.classList.add('asc');
+                    }
+                    
+                    sortTable(table.id, column, direction);
+                });
+            });
+        });
+    </script>
 </head>
 <body class="museum-bg">
 <?php include '../header.php'; ?>
@@ -60,18 +109,18 @@ $result = $stmt->get_result();
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table museum-table">
+                    <table class="table museum-table" id="ticketsTable">
                         <thead>
                             <tr>
-                                <th><i class="fas fa-hashtag me-2"></i>ID квитка</th>
-                                <th><i class="fas fa-calendar me-2"></i>Дата покупки</th>
-                                <th><i class="fas fa-user me-2"></i>Користувач</th>
-                                <th><i class="fas fa-tag me-2"></i>Тип користувача</th>
-                                <th><i class="fas fa-palette me-2"></i>Назва виставки</th>
-                                <th><i class="fas fa-calendar-alt me-2"></i>Дата початку</th>
-                                <th><i class="fas fa-calendar-times me-2"></i>Дата завершення</th>
-                                <th><i class="fas fa-info-circle me-2"></i>Опис</th>
-                                <th><i class="fas fa-building me-2"></i>Зал</th>
+                                <th class="sortable" data-column="0"><i class="fas fa-hashtag me-2"></i>ID квитка</th>
+                                <th class="sortable" data-column="1"><i class="fas fa-calendar me-2"></i>Дата покупки</th>
+                                <th class="sortable" data-column="2"><i class="fas fa-user me-2"></i>Користувач</th>
+                                <th class="sortable" data-column="3"><i class="fas fa-tag me-2"></i>Тип користувача</th>
+                                <th class="sortable" data-column="4"><i class="fas fa-palette me-2"></i>Назва виставки</th>
+                                <th class="sortable" data-column="5"><i class="fas fa-calendar-alt me-2"></i>Дата початку</th>
+                                <th class="sortable" data-column="6"><i class="fas fa-calendar-times me-2"></i>Дата завершення</th>
+                                <th class="sortable" data-column="7"><i class="fas fa-info-circle me-2"></i>Опис</th>
+                                <th class="sortable" data-column="8"><i class="fas fa-building me-2"></i>Зал</th>
                                 <th><i class="fas fa-cogs me-2"></i>Дії</th>
                             </tr>
                         </thead>

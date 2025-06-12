@@ -76,6 +76,54 @@ $result = $stmt->get_result();
                 document.getElementById('delete-form').submit();
             }
         }
+        
+        function sortTable(tableId, column, direction) {
+            const table = document.getElementById(tableId);
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            rows.sort((a, b) => {
+                const aText = a.cells[column].textContent.trim();
+                const bText = b.cells[column].textContent.trim();
+                
+                if (!isNaN(aText) && !isNaN(bText)) {
+                    return direction === 'asc' ? aText - bText : bText - aText;
+                }
+                
+                return direction === 'asc' 
+                    ? aText.localeCompare(bText, 'uk') 
+                    : bText.localeCompare(aText, 'uk');
+            });
+            
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.sortable').forEach(header => {
+                header.addEventListener('click', function() {
+                    const table = this.closest('table');
+                    const column = parseInt(this.dataset.column);
+                    
+                    document.querySelectorAll(`#${table.id} .sortable`).forEach(h => {
+                        if (h !== this) {
+                            h.classList.remove('asc', 'desc');
+                        }
+                    });
+                    
+                    let direction = 'asc';
+                    if (this.classList.contains('asc')) {
+                        direction = 'desc';
+                        this.classList.remove('asc');
+                        this.classList.add('desc');
+                    } else {
+                        this.classList.remove('desc');
+                        this.classList.add('asc');
+                    }
+                    
+                    sortTable(table.id, column, direction);
+                });
+            });
+        });
     </script>
 </head>
 <body class="museum-bg">
@@ -133,16 +181,16 @@ $result = $stmt->get_result();
                     </div>
                 </div>           
                 <div class="table-responsive">
-                    <table class="table museum-table">
+                    <table class="table museum-table" id="exhibitsTable">
                         <thead>
                             <tr>
-                                <th><i class="fas fa-hashtag me-2"></i>ID</th>
-                                <th><i class="fas fa-gem me-2"></i>Назва</th>
-                                <th><i class="fas fa-align-left me-2"></i>Опис</th>
-                                <th><i class="fas fa-calendar me-2"></i>Рік створення</th>
-                                <th><i class="fas fa-building me-2"></i>Зал</th>
-                                <th><i class="fas fa-tools me-2"></i>Остання реставрація</th>
-                                <th><i class="fas fa-heart me-2"></i>Стан</th>
+                                <th class="sortable" data-column="0"><i class="fas fa-hashtag me-2"></i>ID</th>
+                                <th class="sortable" data-column="1"><i class="fas fa-gem me-2"></i>Назва</th>
+                                <th class="sortable" data-column="2"><i class="fas fa-align-left me-2"></i>Опис</th>
+                                <th class="sortable" data-column="3"><i class="fas fa-calendar me-2"></i>Рік створення</th>
+                                <th class="sortable" data-column="4"><i class="fas fa-building me-2"></i>Зал</th>
+                                <th class="sortable" data-column="5"><i class="fas fa-tools me-2"></i>Остання реставрація</th>
+                                <th class="sortable" data-column="6"><i class="fas fa-heart me-2"></i>Стан</th>
                                 <th><i class="fas fa-image me-2"></i>Фото</th>
                                 <?php if ($can_manage_content): ?>
                                     <th><i class="fas fa-cogs me-2"></i>Дії</th>

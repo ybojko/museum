@@ -91,6 +91,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role
                 document.getElementById('delete-form').submit();
             }
         }
+        
+        function sortTable(tableId, column, direction) {
+            const table = document.getElementById(tableId);
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            rows.sort((a, b) => {
+                const aText = a.cells[column].textContent.trim();
+                const bText = b.cells[column].textContent.trim();
+                
+                if (!isNaN(aText) && !isNaN(bText)) {
+                    return direction === 'asc' ? aText - bText : bText - aText;
+                }
+                
+                return direction === 'asc' 
+                    ? aText.localeCompare(bText, 'uk') 
+                    : bText.localeCompare(aText, 'uk');
+            });
+            
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.sortable').forEach(header => {
+                header.addEventListener('click', function() {
+                    const table = this.closest('table');
+                    const column = parseInt(this.dataset.column);
+                    
+                    document.querySelectorAll(`#${table.id} .sortable`).forEach(h => {
+                        if (h !== this) {
+                            h.classList.remove('asc', 'desc');
+                        }
+                    });
+                    
+                    let direction = 'asc';
+                    if (this.classList.contains('asc')) {
+                        direction = 'desc';
+                        this.classList.remove('asc');
+                        this.classList.add('desc');
+                    } else {
+                        this.classList.remove('desc');
+                        this.classList.add('asc');
+                    }
+                    
+                    sortTable(table.id, column, direction);
+                });
+            });
+        });
     </script>
 </head>
 <body class="museum-bg">
@@ -154,18 +202,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role
                             <i class="fas fa-store me-2"></i>Офлайн-робітники
                         </h5>
                         <div class="table-responsive">
-                            <table class="table museum-table">
+                            <table class="table museum-table" id="employeesTable">
                                 <thead>
                                     <tr>
-                                        <th><i class="fas fa-hashtag me-2"></i>ID</th>
-                                        <th><i class="fas fa-user me-2"></i>Прізвище</th>
-                                        <th><i class="fas fa-user me-2"></i>Ім'я</th>
-                                        <th><i class="fas fa-briefcase me-2"></i>Посада</th>
-                                        <th><i class="fas fa-money-bill me-2"></i>Зарплата</th>
-                                        <th><i class="fas fa-calendar me-2"></i>Дата найму</th>
-                                        <th><i class="fas fa-envelope me-2"></i>Email</th>
-                                        <th><i class="fas fa-phone me-2"></i>Телефон</th>
-                                        <th><i class="fas fa-building me-2"></i>Зал</th>
+                                        <th class="sortable" data-column="0"><i class="fas fa-hashtag me-2"></i>ID</th>
+                                        <th class="sortable" data-column="1"><i class="fas fa-user me-2"></i>Прізвище</th>
+                                        <th class="sortable" data-column="2"><i class="fas fa-user me-2"></i>Ім'я</th>
+                                        <th class="sortable" data-column="3"><i class="fas fa-briefcase me-2"></i>Посада</th>
+                                        <th class="sortable" data-column="4"><i class="fas fa-money-bill me-2"></i>Зарплата</th>
+                                        <th class="sortable" data-column="5"><i class="fas fa-calendar me-2"></i>Дата найму</th>
+                                        <th class="sortable" data-column="6"><i class="fas fa-envelope me-2"></i>Email</th>
+                                        <th class="sortable" data-column="7"><i class="fas fa-phone me-2"></i>Телефон</th>
+                                        <th class="sortable" data-column="8"><i class="fas fa-building me-2"></i>Зал</th>
                                         <th><i class="fas fa-image me-2"></i>Фото</th>
                                         <?php if ($role === 'admin'): ?>
                                             <th><i class="fas fa-cogs me-2"></i>Дії</th>
@@ -258,14 +306,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id']) && $role
                             <i class="fas fa-globe me-2"></i>Онлайн-робітники
                         </h5>
                         <div class="table-responsive">
-                            <table class="table museum-table">
+                            <table class="table museum-table" id="staffTable">
                                 <thead>
                                     <tr>
-                                        <th><i class="fas fa-hashtag me-2"></i>ID</th>
-                                        <th><i class="fas fa-user me-2"></i>Ім'я користувача</th>
-                                        <th><i class="fas fa-envelope me-2"></i>Email</th>
-                                        <th><i class="fas fa-calendar me-2"></i>Дата створення</th>
-                                        <th><i class="fas fa-shield-alt me-2"></i>Роль</th>
+                                        <th class="sortable" data-column="0"><i class="fas fa-hashtag me-2"></i>ID</th>
+                                        <th class="sortable" data-column="1"><i class="fas fa-user me-2"></i>Ім'я користувача</th>
+                                        <th class="sortable" data-column="2"><i class="fas fa-envelope me-2"></i>Email</th>
+                                        <th class="sortable" data-column="3"><i class="fas fa-calendar me-2"></i>Дата створення</th>
+                                        <th class="sortable" data-column="4"><i class="fas fa-shield-alt me-2"></i>Роль</th>
                                     </tr>
                                 </thead>
                                 <tbody>
